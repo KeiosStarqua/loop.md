@@ -12,8 +12,8 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
 ```text
 Linear (issue kỹ thuật nguyên tử — nguồn sự thật)
     ↓ Cursor Automation: status → Todo chạy ce-plan
-docs/plans/ + ce-plan / ce-work (hoặc tương đương)
-    ↓ kiểm chứng (build / smoke / tests)
+docs/plans/ + ce-plan → Slack báo owner (kế hoạch xong)
+    ↓ ce-work (hoặc tương đương) → kiểm chứng (build / smoke / tests)
 Đóng vòng (bắt buộc — thuộc “xong”)
     → đánh dấu Definition of Done trên plan
     → Linear → Done + comment @owner
@@ -22,7 +22,7 @@ docs/plans/ + ce-plan / ce-work (hoặc tương đương)
 Lặp issue Linear tiếp theo
 ```
 
-**Cursor Automation (kích hoạt lập kế hoạch):** workspace này dùng **Cursor Automations**. Khi owner đổi status issue Linear sang **`Todo`**, automation **tự chạy skill `ce-plan`** cho issue đó (tạo/cập nhật plan dưới `docs/plans/`). Agent coi việc lập kế hoạch có thể đã chạy hoặc xong qua automation — không coi “status → Todo” là lý do bỏ đóng vòng sau này, và ưu tiên bám plan do automation tạo thay vì mở đường lập kế hoạch song song.
+**Cursor Automation (kích hoạt lập kế hoạch):** workspace này dùng **Cursor Automations**. Khi owner đổi status issue Linear sang **`Todo`**, automation **tự chạy skill `ce-plan`** cho issue đó (tạo/cập nhật plan dưới `docs/plans/`). **Sau khi `ce-plan` xong**, agent **phải** gửi báo cáo lên Slack (và comment Linear) theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Agent coi việc lập kế hoạch có thể đã chạy hoặc xong qua automation — không coi “status → Todo” là lý do bỏ đóng vòng sau này, và ưu tiên bám plan do automation tạo thay vì mở đường lập kế hoạch song song.
 
 Một đặc tả vòng nên có ít nhất: Trigger, Goal, Available context, Permitted actions, Verification, Failure handling, Memory update, Stopping conditions.
 
@@ -50,6 +50,15 @@ Khi agent xong việc có ý nghĩa (task/issue xong, owner cần xem kết qu�
 2. **Linear** — trên issue kỹ thuật liên quan: `save_comment` với `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`, và/hoặc `save_issue` với `assignee: "me"` khi gán lại cho owner. Ngôn ngữ comment: **tiếng Việt 100%**.
 
 Không dùng Slack draft / nhắc trong Cursor chat thay cho hai kênh trên. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project **`REPLACE_LINEAR_PROJECT_NAME`**, rồi comment + (tùy chọn) assign.
+
+### Quy trình vòng sau `ce-plan` (bắt buộc)
+
+Khi skill **`ce-plan`** (hoặc Cursor Automation chạy `ce-plan` sau status → `Todo`) **đã tạo/cập nhật plan** dưới `docs/plans/`, agent **không** dừng ở Cursor chat. Báo cáo lập kế hoạch là một phần của “xong plan”:
+
+1. **Plan ↔ Linear** — đảm bảo đường dẫn plan đã ghi vào mô tả issue Linear và frontmatter/section plan có `linear_issues:` (xem **Plan ↔ Linear** bên dưới).
+2. **Thông báo** — chạy **Thông báo hoàn thành của agent** (**Slack bắt buộc** + comment Linear): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, tóm tắt hướng triển khai / bước tiếp (`ce-work` hoặc chờ owner duyệt). Luôn `@` mention owner trên Slack.
+
+Không chỉ nhắc trong Cursor chat. Áp dụng cả khi `ce-plan` chạy thủ công lẫn qua automation.
 
 ### Quy trình vòng sau `ce-work` (bắt buộc)
 
@@ -82,7 +91,7 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 **Quy trình agent**
 - Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
-- **Status → Todo → plan:** owner (hoặc automation) chuyển issue sang **`Todo`** kích hoạt Cursor Automation chạy **`ce-plan`**. Khi triển khai, ưu tiên `ce-work` theo plan đã tạo (`docs/plans/…`).
+- **Status → Todo → plan:** owner (hoặc automation) chuyển issue sang **`Todo`** kích hoạt Cursor Automation chạy **`ce-plan`**. Sau `ce-plan`, **bắt buộc** Slack + comment Linear — xem **Quy trình vòng sau `ce-plan`**. Khi triển khai, ưu tiên `ce-work` theo plan đã tạo (`docs/plans/…`).
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
 - Sau khi xong Linear issue (đặc biệt sau `ce-work`): agent **tự** `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Không chỉ nhắc owner đóng Linear.
 
@@ -93,7 +102,7 @@ Khi vòng thủ công đã ổn:
 ```text
 /loop <interval> Chọn Linear issue mở ưu tiên cao nhất trong project REPLACE_LINEAR_PROJECT_NAME
 (ưu tiên In Progress, rồi ưu tiên cao). Nếu chưa có plan thì chạy ce-plan (hoặc chờ
-Cursor Automation sau Todo); không thì ce-work. Kiểm chứng. Chạy đóng vòng
+Cursor Automation sau Todo) rồi Slack báo owner; không thì ce-work. Kiểm chứng. Chạy đóng vòng
 (DoD + Linear Done + Slack + comment Linear).
 Dừng khi BLOCKED / NEEDS_HUMAN_DECISION.
 ```
