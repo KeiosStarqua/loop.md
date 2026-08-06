@@ -7,3 +7,4 @@ Tham gia bởi:
 - [Compound Engineering](https://github.com/EveryInc/compound-engineering-plugin)
 - [Cursor Automation](https://cursor.com/docs/agent/automations)
 - [Linear](https://linear.app)
+- [Slack](https://slack.com/)
