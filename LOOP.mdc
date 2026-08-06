@@ -1,0 +1,118 @@
+---
+alwaysApply: true
+---
+
+### Loop Engineering — vòng giao tính năng
+
+Hình dạng vòng chuẩn:
+
+```text
+Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm chứng
+         → Review → Học → Đóng vòng → Lặp lại hoặc Dừng
+```
+
+Ánh xạ trên repo này:
+
+```text
+Linear (issue kỹ thuật nguyên tử — nguồn sự thật)
+    ↓ Cursor Automation: status → Todo chạy ce-plan
+docs/plans/ + ce-plan / ce-work (hoặc tương đương)
+    ↓ kiểm chứng (build / smoke / tests)
+Đóng vòng (bắt buộc — thuộc “xong”)
+    → đánh dấu Definition of Done trên plan
+    → Linear → Done + comment @owner
+    → Slack báo owner (kênh agent)
+    → tùy chọn: compound / DOX / cập nhật memory giải pháp
+Lặp issue Linear tiếp theo
+```
+
+**Cursor Automation (kích hoạt lập kế hoạch):** workspace này dùng **Cursor Automations**. Khi owner đổi status issue Linear sang **`Todo`**, automation **tự chạy skill `ce-plan`** cho issue đó (tạo/cập nhật plan dưới `docs/plans/`). Agent coi việc lập kế hoạch có thể đã chạy hoặc xong qua automation — không coi “status → Todo” là lý do bỏ đóng vòng sau này, và ưu tiên bám plan do automation tạo thay vì mở đường lập kế hoạch song song.
+
+Một đặc tả vòng nên có ít nhất: Trigger, Goal, Available context, Permitted actions, Verification, Failure handling, Memory update, Stopping conditions.
+
+Trạng thái kết thúc (mỗi lần chạy kết thúc đúng một):
+
+- `COMPLETE`
+- `BLOCKED`
+- `FAILED_VERIFICATION`
+- `NEEDS_HUMAN_DECISION`
+- `BUDGET_EXHAUSTED`
+
+Chỉ `COMPLETE` khi: acceptance criteria có bằng chứng; các check bắt buộc pass; không còn thay đổi không giải thích được; docs đã cập nhật khi cần; đóng vòng tracking đã xong.
+
+### Thông báo hoàn thành của agent (bắt buộc)
+
+Khi agent xong việc có ý nghĩa (task/issue xong, owner cần xem kết quả, hoặc user yêu cầu báo cáo), thông báo **cả hai** kênh — không chỉ một:
+
+1. **Slack** — `slack_send_message` **chỉ** vào kênh thông báo agent:
+   - URL kênh: `REPLACE_SLACK_CHANNEL_URL`
+   - `channel_id` = `REPLACE_SLACK_CHANNEL_ID`
+   - **Không** DM hay dùng kênh khác.
+   - Luôn `@` mention owner bằng Slack user ID `REPLACE_SLACK_OWNER_USER_ID` theo dạng `<@REPLACE_SLACK_OWNER_USER_ID>` trong nội dung tin (không chỉ URL profile).
+   - Tin ngắn: việc gì xong, kết quả/link chính, bước tiếp theo nếu có.
+
+2. **Linear** — trên issue kỹ thuật liên quan: `save_comment` với `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`, và/hoặc `save_issue` với `assignee: "me"` khi gán lại cho owner. Ngôn ngữ comment: **tiếng Việt 100%**.
+
+Không dùng Slack draft / nhắc trong Cursor chat thay cho hai kênh trên. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project **`REPLACE_LINEAR_PROJECT_NAME`**, rồi comment + (tùy chọn) assign.
+
+### Quy trình vòng sau `ce-work` (bắt buộc)
+
+Khi skill **`ce-work`** (hoặc tương đương: đã triển khai xong plan dưới `docs/plans/`) **đã kiểm chứng và hoàn tất phạm vi plan**, agent **không** dừng ở Cursor chat. Đóng vòng tracking là một phần của “xong”:
+
+1. **Plan (`docs/plans/…`)** — đánh dấu **Definition of Done** (và checkbox unit liên quan nếu có) thành `[x]` khi đã có bằng chứng (build/smoke/commit). Thêm ghi chú smoke/verify ngắn nếu plan còn chỗ trống. *Trong lúc* `ce-work`, vẫn không dùng plan làm task tracker giữa chừng; *sau khi* hoàn tất, **phải** tick DoD — đóng vòng repo này ghi đè hướng dẫn skill chung “đừng sửa thân plan”.
+
+2. **Linear** — `save_issue` đặt issue gắn với plan (`linear_issues:` / frontmatter) sang **`Done`**. Cập nhật mô tả nếu vẫn mô tả trạng thái cũ (ví dụ “file X chưa tồn tại”). `save_comment` tiếng Việt + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`: đã ship gì, commit/PR chính, bước tiếp (nếu có). **Không** chỉ nhờ owner tự đóng issue.
+
+3. **Thông báo** — chạy **Thông báo hoàn thành của agent** (Slack + comment Linear) ngay sau bước 1–2.
+
+Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn mở: nếu agent thấy lệch, hoàn tất đóng vòng — không để Backlog + checkbox trống.
+
+### Quản lý việc
+
+**Linear** là nguồn sự thật cho issue triển khai đang chạy và backlog kỹ thuật của vòng này. **Không** nhân bản toàn bộ backlog vào git.
+
+#### Linear (issue kỹ thuật nguyên tử)
+
+| Trường | Giá trị |
+|--------|---------|
+| Workspace | **`REPLACE_LINEAR_WORKSPACE`** |
+| Project | **`REPLACE_LINEAR_PROJECT_NAME`** |
+| URL project | `REPLACE_LINEAR_PROJECT_URL` |
+| ID project | `REPLACE_LINEAR_PROJECT_ID` |
+
+**Ngôn ngữ (bắt buộc cho setup này)**
+- Toàn bộ chữ trên Linear **tiếng Việt 100%**: title, description, comment, acceptance, ghi chú. Giữ nguyên identifier file/path/tech khi trích dẫn.
+
+**Quy trình agent**
+- Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
+- Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
+- **Status → Todo → plan:** owner (hoặc automation) chuyển issue sang **`Todo`** kích hoạt Cursor Automation chạy **`ce-plan`**. Khi triển khai, ưu tiên `ce-work` theo plan đã tạo (`docs/plans/…`).
+- **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
+- Sau khi xong Linear issue (đặc biệt sau `ce-work`): agent **tự** `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Không chỉ nhắc owner đóng Linear.
+
+### Tùy chọn: gắn Cursor `/loop` sau
+
+Khi vòng thủ công đã ổn:
+
+```text
+/loop <interval> Chọn Linear issue mở ưu tiên cao nhất trong project REPLACE_LINEAR_PROJECT_NAME
+(ưu tiên In Progress, rồi ưu tiên cao). Nếu chưa có plan thì chạy ce-plan (hoặc chờ
+Cursor Automation sau Todo); không thì ce-work. Kiểm chứng. Chạy đóng vòng
+(DoD + Linear Done + Slack + comment Linear).
+Dừng khi BLOCKED / NEEDS_HUMAN_DECISION.
+```
+
+Không auto-merge sớm. Ưu tiên một vòng giao tính năng ổn định trước multi-agent graph.
+
+### Checklist REPLACE (điền trước khi dán sang repo khác)
+
+| Placeholder | Ví dụ (KT System) |
+|-------------|-------------------|
+| `REPLACE_SLACK_CHANNEL_URL` | `https://app.slack.com/client/T0AL8AZPMPF/C0BN6GATNSH` |
+| `REPLACE_SLACK_CHANNEL_ID` | `C0BN6GATNSH` |
+| `REPLACE_SLACK_OWNER_USER_ID` | `U0ALQLU34C9` |
+| `REPLACE_LINEAR_OWNER_DISPLAY_NAME` | `taquangkhoi` |
+| `REPLACE_LINEAR_WORKSPACE` | `keios` |
+| `REPLACE_LINEAR_PROJECT_NAME` | `KT System` |
+| `REPLACE_LINEAR_PROJECT_URL` | `https://linear.app/keios/project/kt-system-ea15401361ab/overview` |
+| `REPLACE_LINEAR_PROJECT_ID` | `ea15401361ab` |
