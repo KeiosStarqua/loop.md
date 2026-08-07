@@ -33,7 +33,7 @@ Agent completion and step-start signals in LOOP are **Linear-only**:
 
 ## Why This Matters
 
-- **One source of truth** — Linear issue + comments already anchor plan links, PR URLs, and status transitions in the loop diagram.
+- **One source of truth** — Linear issue + comments already anchor plan links, PR URLs, and status transitions in the loop diagram. See also [Any LOOP Step That Creates a PR Must Attach the URL to the Linear Issue](./loop-attach-pr-url-to-linear-issue.md).
 - **Smaller template** — removing Slack instructions and anti-Slack rules keeps distributed `LOOP.mdc` easier to read and less tied to optional integrations.
 - **Fewer false failures** — agents following LOOP in repos without Slack configured were blocked or confused by Slack-specific steps.
 
