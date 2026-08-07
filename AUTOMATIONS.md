@@ -24,6 +24,8 @@ ce-compound → ghi learning/DOX (không đổi status Linear)
 
 Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
 
+**Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ automation nào tạo pull/merge request đều phải gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo, kể cả khi automation đó không phải Implement.
+
 ---
 
 ## 1. Generate plan
@@ -41,7 +43,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 2. Kiểm tra plan đã tồn tại chưa (tránh tạo trùng).
 3. Chạy `/ce-plan` (skill `ce-plan`) cho issue Linear.
 4. **Không** đổi status Linear khi xong.
-5. Nếu đã có code changes + PR/MR: `git` kiểm tra conflict với `main`; có thì resolve.
+5. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve.
 
 ---
 
