@@ -13,7 +13,6 @@ Replace this placeholder with a concise description of what this project does, w
 - Thông báo hoàn thành agent chỉ qua Linear comment (save_comment) — bỏ gửi message Slack khỏi LOOP.md/LOOP.mdc [LOOP.md]
 
 ## Notes
-- docs: add sync-loop usage and agent prompt to README
 - feat: add remote sync-loop runner from GitHub raw URL
 - docs: add curl one-liners for sync-loop-remote.sh
 - docs: explain why sync-loop must use sync-loop-remote wrapper
@@ -23,6 +22,7 @@ Replace this placeholder with a concise description of what this project does, w
 - Merge: Merge pull request #1 from KeiosStarqua/cursor/add-compound-automation-fe8d
 - LOOP.md và LOOP.mdc phải đồng bộ nội dung; không cross-ref file chỉ tồn tại trong my-loop-config (như AUTOMATIONS.md).
 - LOOP Generate plan: báo bắt đầu chỉ trên Linear (không còn Linear + Slack) [LOOP.md]
+- New feature: feat(automations): attach PR URL in generate-plan automation prompt [automations/generate-plan.json]
 
 ## Key files
 - `README.md`
