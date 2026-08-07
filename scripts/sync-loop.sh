@@ -19,11 +19,20 @@ usage() {
   cat <<'EOF'
 Usage:
   sync-loop.sh [--init] [TARGET_REPO]
+  sync-loop.sh --setup --owner NAME --workspace SLUG --project-name NAME \
+               --project-url URL --project-id ID [--force] [TARGET_REPO]
 
   Không có flag: copy LOOP.mdc → TARGET/.cursor/rules/LOOP.mdc
                 và thay REPLACE_* bằng giá trị trong TARGET/.cursor/loop.env
 
   --init        tạo TARGET/.cursor/loop.env từ loop.env.example (không ghi đè)
+
+  --setup       làm cả 3 bước trong 1 lệnh: tạo loop.env từ 5 flag Linear
+                (nếu chưa có, hoặc ghi đè nếu kèm --force) rồi sync ngay.
+                Thiếu flag nào mà loop.env chưa có → báo lỗi rõ flag đó.
+                loop.env đã có sẵn thì giữ nguyên (bỏ qua các flag) trừ khi --force.
+
+  --force       chỉ có tác dụng cùng --setup: ghi đè loop.env đã có
 
 TARGET_REPO mặc định: thư mục hiện tại (.)
 EOF
@@ -91,6 +100,37 @@ cmd_init() {
   echo "đã tạo: $dest — hãy điền giá trị Linear của repo"
 }
 
+cmd_setup() {
+  local target="$1"
+  local force="$2"
+  local dest="${target}/.cursor/loop.env"
+  local key missing=()
+
+  if [[ -f "$dest" && "$force" != 1 ]]; then
+    echo "đã có: $dest (giữ nguyên, dùng --force để ghi đè)"
+  else
+    for key in "${PLACEHOLDERS[@]}"; do
+      if [[ -z "${SETUP_VALUES[$key]+x}" || -z "${SETUP_VALUES[$key]}" ]]; then
+        missing+=("$key")
+      fi
+    done
+    if ((${#missing[@]})); then
+      die "thiếu flag cho --setup (loop.env chưa tồn tại): ${missing[*]}"
+    fi
+
+    mkdir -p "${target}/.cursor"
+    {
+      echo "# Giá trị Linear cho repo này — tạo bởi sync-loop.sh --setup"
+      for key in "${PLACEHOLDERS[@]}"; do
+        printf '%s=%s\n' "$key" "${SETUP_VALUES[$key]}"
+      done
+    } > "$dest"
+    echo "đã tạo: $dest"
+  fi
+
+  cmd_sync "$target"
+}
+
 cmd_sync() {
   local target="$1"
   local env_file="${target}/.cursor/loop.env"
@@ -134,12 +174,22 @@ cmd_sync() {
 
 main() {
   local init=0
+  local setup=0
+  local force=0
   local target=""
+  declare -gA SETUP_VALUES=()
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
       -h|--help) usage; exit 0 ;;
       --init) init=1; shift ;;
+      --setup) setup=1; shift ;;
+      --force) force=1; shift ;;
+      --owner) SETUP_VALUES[REPLACE_LINEAR_OWNER_DISPLAY_NAME]="$2"; shift 2 ;;
+      --workspace) SETUP_VALUES[REPLACE_LINEAR_WORKSPACE]="$2"; shift 2 ;;
+      --project-name) SETUP_VALUES[REPLACE_LINEAR_PROJECT_NAME]="$2"; shift 2 ;;
+      --project-url) SETUP_VALUES[REPLACE_LINEAR_PROJECT_URL]="$2"; shift 2 ;;
+      --project-id) SETUP_VALUES[REPLACE_LINEAR_PROJECT_ID]="$2"; shift 2 ;;
       -*) die "flag không rõ: $1" ;;
       *) target="$1"; shift ;;
     esac
@@ -148,7 +198,9 @@ main() {
   target="$(cd "${target:-.}" && pwd)"
   [[ -d "$target" ]] || die "không phải thư mục: $target"
 
-  if ((init)); then
+  if ((setup)); then
+    cmd_setup "$target" "$force"
+  elif ((init)); then
     cmd_init "$target"
   else
     cmd_sync "$target"

@@ -27,6 +27,24 @@ Mỗi repo giữ giá trị Linear riêng trong `.cursor/loop.env`. Script copy 
 https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh
 ```
 
+### Một lệnh duy nhất (`--setup`)
+
+Gộp cả 3 bước (tạo `loop.env` → điền giá trị Linear → sync `LOOP.mdc`) thành **1 lệnh**, không cần chạy `curl` hai lần hay tự sửa file:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --setup \
+  --owner "taquangkhoi" \
+  --workspace "keios" \
+  --project-name "Ten Project" \
+  --project-url "https://linear.app/keios/project/ten-project-xxxx/overview" \
+  --project-id "xxxx" \
+  /path/to/repo
+```
+
+- Nếu `<repo>/.cursor/loop.env` **chưa có**: tạo file từ 5 flag trên rồi sync ngay.
+- Nếu **đã có**: giữ nguyên, bỏ qua các flag, chỉ sync (idempotent — chạy lại nhiều lần không sao). Thêm `--force` nếu muốn ghi đè bằng giá trị flag mới.
+- Thiếu flag mà `loop.env` chưa tồn tại → lỗi rõ tên flag còn thiếu, không tạo file nửa vời.
+
 ### Chạy bằng `curl` (không cần clone)
 
 Trong thư mục repo đích:
@@ -74,7 +92,7 @@ Dùng sync-loop để cài/cập nhật LOOP.mdc cho từng repo đích. Không 
 
 Luôn lấy runner mới nhất qua curl (khuyến nghị — không cần clone):
 
-  curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- [--init] [<repo>]
+  curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- [--init|--setup ...] [<repo>]
 
   sync-loop-remote.sh tự tải sync-loop.sh + LOOP.mdc + loop.env.example cùng revision.
   Không pipe sync-loop.sh trực tiếp (thiếu template).
@@ -83,26 +101,25 @@ Luôn lấy runner mới nhất qua curl (khuyến nghị — không cần clone
 
 Cho mỗi repo đích, lần lượt:
 
-1. Nếu chưa có <repo>/.cursor/loop.env:
-   - Chạy:
-       curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init <repo>
-   - Điền đủ 5 biến Linear trong .cursor/loop.env (hỏi owner nếu thiếu):
-     REPLACE_LINEAR_OWNER_DISPLAY_NAME
-     REPLACE_LINEAR_WORKSPACE
-     REPLACE_LINEAR_PROJECT_NAME
-     REPLACE_LINEAR_PROJECT_URL
-     REPLACE_LINEAR_PROJECT_ID
-   - Không commit secret; loop.env chỉ chứa metadata Linear public.
+1. Nếu chưa có <repo>/.cursor/loop.env: tự tra Linear (list_projects / search theo
+   tên repo) để xác định project phù hợp, hỏi owner nếu không kết luận được rõ ràng.
+   Cần đủ 5 giá trị: owner display name, workspace slug, project name, project url,
+   project id.
 
-2. Chạy:
-     curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- <repo>
-   - Kết quả bắt buộc: <repo>/.cursor/rules/LOOP.mdc
-   - File này phải không còn placeholder REPLACE_LINEAR_*
+2. Chạy đúng 1 lệnh --setup cho repo đó (tự tạo loop.env nếu chưa có, rồi sync ngay;
+   nếu loop.env đã có thì bỏ qua flag và chỉ sync — an toàn để chạy lại):
+
+     curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --setup \
+       --owner "<owner>" --workspace "<workspace>" --project-name "<project name>" \
+       --project-url "<project url>" --project-id "<project id>" <repo>
+
+   - Kết quả bắt buộc: <repo>/.cursor/rules/LOOP.mdc, không còn placeholder REPLACE_LINEAR_*
    - Giá trị trong file phải khớp .cursor/loop.env của repo đó
+   - Không commit secret; loop.env chỉ chứa metadata Linear public.
 
 3. Xác minh nhanh (grep REPLACE_LINEAR_ → không có kết quả; spot-check owner/project).
 
-Khi user liệt kê nhiều repo: lặp bước 1–3 cho từng repo, báo cáo ngắn từng repo
-(ok / thiếu loop.env / lỗi). Không sửa LOOP.md hoặc LOOP.mdc trong my-loop-config
-trừ khi user yêu cầu rõ.
+Khi user liệt kê nhiều repo: lặp bước 1–3 cho từng repo (mỗi repo 1 lệnh --setup),
+báo cáo ngắn từng repo (ok / thiếu thông tin Linear / lỗi). Không sửa LOOP.md hoặc
+LOOP.mdc trong my-loop-config trừ khi user yêu cầu rõ.
 ```
