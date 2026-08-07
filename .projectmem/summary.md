@@ -10,9 +10,9 @@ Replace this placeholder with a concise description of what this project does, w
 
 ## Decisions
 - Không đề cập AUTOMATIONS.md trong LOOP.md / LOOP.mdc — các file này được copy vào từng repo và LOOP.mdc thành Cursor rule; chi tiết automation chỉ giữ ở AUTOMATIONS.md trong repo config.
+- Thông báo hoàn thành agent chỉ qua Linear comment (save_comment) — bỏ gửi message Slack khỏi LOOP.md/LOOP.mdc [LOOP.md]
 
 ## Notes
-- feat: add sync-loop script to distribute LOOP.mdc to repos
 - docs: add sync-loop usage and agent prompt to README
 - feat: add remote sync-loop runner from GitHub raw URL
 - docs: add curl one-liners for sync-loop-remote.sh
@@ -22,6 +22,7 @@ Replace this placeholder with a concise description of what this project does, w
 - High churn detected: docs/solutions/developer-experience/sync-loop-auto-init-missing-env.md (4 edits in 10 min) [docs/solutions/developer-experience/sync-loop-auto-init-missing-env.md]
 - Merge: Merge pull request #1 from KeiosStarqua/cursor/add-compound-automation-fe8d
 - LOOP.md và LOOP.mdc phải đồng bộ nội dung; không cross-ref file chỉ tồn tại trong my-loop-config (như AUTOMATIONS.md).
+- LOOP Generate plan: báo bắt đầu chỉ trên Linear (không còn Linear + Slack) [LOOP.md]
 
 ## Key files
 - `README.md`
@@ -41,6 +42,7 @@ Replace this placeholder with a concise description of what this project does, w
 - `sync-loop.sh`
 - `loop.env`
 - `docs/solutions/developer-experience/sync-loop-auto-init-missing-env.md`
+- `LOOP.md/LOOP.mdc`
 
 ## Open questions
 - None logged yet.
