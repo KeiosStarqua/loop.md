@@ -22,7 +22,7 @@ docs/plans/ + comment Linear @owner (kế hoạch xong; không đổi status)
 Lặp issue Linear tiếp theo
 ```
 
-**Cursor Automations (ba bước — chi tiết `AUTOMATIONS.md`):**
+**Cursor Automations (ba bước):**
 
 1. **Generate plan** — status → **`Todo`**: báo Linear + Slack đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
