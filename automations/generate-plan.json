@@ -37,7 +37,7 @@
   ],
   "prompts": [
     {
-      "prompt": "/ce-plan for the issue from Linear. Please use skil ce-plan to make the plan.\nKiểm tra xem plan đã tồn tại chưa.Bước đầu tiên là gửi một thông báo lên Linear và Slack là đã bắt đầu tạo plan.\nKhông đổi status trên Linear khi xong việc tạo.\nKhi có code changes và đã tạo pull request, dùng git để kiểm tra xem có conflict với nhánh main. Nếu có thì phải resolve confict."
+      "prompt": "/ce-plan for the issue from Linear. Please use skil ce-plan to make the plan.\nKiểm tra xem plan đã tồn tại chưa.Bước đầu tiên là gửi một thông báo lên Linear và Slack là đã bắt đầu tạo plan.\nKhông đổi status trên Linear khi xong việc tạo.\nKhi có code changes và đã tạo pull request, gán url của pull/merge request đó vào Linear issue, rồi dùng git để kiểm tra xem có conflict với nhánh main. Nếu có thì phải resolve confict."
     }
   ],
   "model": "cursor-grok-4.5-high",
