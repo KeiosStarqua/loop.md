@@ -28,9 +28,11 @@ Lặp issue Linear tiếp theo
 
 **Cursor Automations (ba bước):**
 
-1. **Generate plan** — status → **`Todo`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
+1. **Generate plan** — status → **`Todo`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì gắn URL PR/MR vào Linear và kiểm tra/resolve conflict với `main`.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 3. **Compound** — status → **`Done`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; **không** đổi status khi xong (issue đã ở `Done`).
+
+**Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ bước nào tạo pull/merge request (dù là `ce-plan`, `ce-work`, automation, hay chạy tay) đều **phải** gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo — không chờ tới bước tổng kết mới gắn.
 
 **Sau khi `ce-plan` xong** (manual hoặc automation), agent **phải** comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
 
