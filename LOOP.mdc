@@ -15,17 +15,23 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
 
 ```text
 Linear (issue kỹ thuật nguyên tử — nguồn sự thật)
-    ↓ Cursor Automation: status → Todo chạy ce-plan
-docs/plans/ + ce-plan → comment Linear @owner (kế hoạch xong)
-    ↓ ce-work (hoặc tương đương) → kiểm chứng (build / smoke / tests)
-Đóng vòng (bắt buộc — thuộc “xong”)
+    ↓ Cursor Automation: status → Todo → Generate plan (ce-plan)
+docs/plans/ + comment Linear @owner (kế hoạch xong; không đổi status)
+    ↓ owner: status → In Progress
+    ↓ Cursor Automation: Implement (ce-work) → PR/MR + status In Review
+Đóng vòng sau review (bắt buộc — thuộc “xong”)
     → đánh dấu Definition of Done trên plan
     → Linear → Done + comment @owner
     → tùy chọn: compound / DOX / cập nhật memory giải pháp
 Lặp issue Linear tiếp theo
 ```
 
-**Cursor Automation (kích hoạt lập kế hoạch):** workspace này dùng **Cursor Automations**. Khi owner đổi status issue Linear sang **`Todo`**, automation **tự chạy skill `ce-plan`** cho issue đó (tạo/cập nhật plan dưới `docs/plans/`). **Sau khi `ce-plan` xong**, agent **phải** comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Agent coi việc lập kế hoạch có thể đã chạy hoặc xong qua automation — không coi “status → Todo” là lý do bỏ đóng vòng sau này, và ưu tiên bám plan do automation tạo thay vì mở đường lập kế hoạch song song.
+**Cursor Automations (hai bước — chi tiết `AUTOMATIONS.md`):**
+
+1. **Generate plan** — status → **`Todo`**: báo Linear + Slack đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
+2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
+
+**Sau khi `ce-plan` xong** (manual hoặc automation), agent **phải** comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
 
 Một đặc tả vòng nên có ít nhất: Trigger, Goal, Available context, Permitted actions, Verification, Failure handling, Memory update, Stopping conditions.
 
@@ -58,13 +64,15 @@ Không chỉ nhắc trong Cursor chat. Áp dụng cả khi `ce-plan` chạy th�
 
 ### Quy trình vòng sau `ce-work` (bắt buộc)
 
-Khi skill **`ce-work`** (hoặc tương đương: đã triển khai xong plan dưới `docs/plans/`) **đã kiểm chứng và hoàn tất phạm vi plan**, agent **không** dừng ở Cursor chat. Đóng vòng tracking là một phần của “xong”:
+Khi skill **`ce-work`** (hoặc Cursor Automation **Implement** sau status → `In Progress`) **đã kiểm chứng và hoàn tất phạm vi plan**, agent **không** dừng ở Cursor chat:
 
 1. **Plan (`docs/plans/…`)** — đánh dấu **Definition of Done** (và checkbox unit liên quan nếu có) thành `[x]` khi đã có bằng chứng (build/smoke/commit). Thêm ghi chú smoke/verify ngắn nếu plan còn chỗ trống. *Trong lúc* `ce-work`, vẫn không dùng plan làm task tracker giữa chừng; *sau khi* hoàn tất, **phải** tick DoD — đóng vòng repo này ghi đè hướng dẫn skill chung “đừng sửa thân plan”.
 
-2. **Linear** — `save_issue` đặt issue gắn với plan (`linear_issues:` / frontmatter) sang **`Done`**. Cập nhật mô tả nếu vẫn mô tả trạng thái cũ (ví dụ “file X chưa tồn tại”). `save_comment` tiếng Việt + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`: đã ship gì, commit/PR chính, bước tiếp (nếu có). **Không** chỉ nhờ owner tự đóng issue.
+2. **Linear (automation Implement)** — gắn URL PR/MR vào issue; `save_issue` → **`In Review`** (không nhảy thẳng Done). `save_comment` tiếng Việt + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`: đã ship gì, link PR/MR, chờ review.
 
-3. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear) ngay sau bước 1–2.
+3. **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng.
+
+4. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear) sau bước 2 (và bước 3 nếu có).
 
 Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn mở: nếu agent thấy lệch, hoàn tất đóng vòng — không để Backlog + checkbox trống.
 
@@ -87,9 +95,10 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 **Quy trình agent**
 - Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
-- **Status → Todo → plan:** owner (hoặc automation) chuyển issue sang **`Todo`** kích hoạt Cursor Automation chạy **`ce-plan`**. Sau `ce-plan`, **bắt buộc** comment Linear `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-plan`**. Khi triển khai, ưu tiên `ce-work` theo plan đã tạo (`docs/plans/…`).
+- **Status → Todo → plan:** owner chuyển issue sang **`Todo`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-plan`**.
+- **Status → In Progress → implement:** owner chuyển **`In Progress`** → automation **Implement** chạy **`ce-work`** theo plan gắn issue; gắn URL PR/MR; status → **`In Review`**.
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
-- Sau khi xong Linear issue (đặc biệt sau `ce-work`): agent **tự** `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Không chỉ nhắc owner đóng Linear.
+- Sau khi review xong (issue **`In Review`** / PR merged): agent hoặc owner đóng vòng → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Automation Implement chỉ đưa tới **In Review**, không tự Done.
 
 ### Tùy chọn: gắn Cursor `/loop` sau
 
