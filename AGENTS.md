@@ -87,3 +87,5 @@ When the user requests a durable behavior change, record it here or in the relev
 
 - No child AGENTS.md files are needed for the current repository structure.
 - Root-owned files: `README.md`, `LICENSE`, `banner.jpg`, `video-thumbnail.jpg`, and root-level project documentation.
+- `docs/solutions/` — documented solutions to past problems (bugs, best practices, workflow patterns), organized by category with YAML frontmatter (`module`, `tags`, `problem_type`). Relevant when implementing or debugging in documented areas.
+- `CONCEPTS.md` — shared domain vocabulary; read when orienting to the codebase or before discussing domain concepts.

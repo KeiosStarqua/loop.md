@@ -18,7 +18,7 @@ tags: [bash, curl-pipe-bash, bash-source, set-u, remote-script, sync-loop]
 
 `README.md` recommends installing `LOOP.mdc` into a target repo by piping
 `sync-loop-remote.sh` through `curl | bash`, and explicitly warns not to pipe
-`sync-loop.sh` directly (`README.md:52`). A user asked why the direct,
+`sync-loop.sh` directly (`README.md:43`). A user asked why the direct,
 simpler-looking `curl .../scripts/sync-loop.sh | bash` isn't good enough,
 since the raw file is public on GitHub either way.
 
@@ -78,7 +78,7 @@ what `sync-loop-remote.sh` does for `sync-loop.sh`.
 
 The failure is not "missing template" (which would at least explain itself
 via `sync-loop.sh`'s own `die "không tìm thấy template: $TEMPLATE"` check at
-`scripts/sync-loop.sh:101`) — it's an unrelated, confusing `unbound variable`
+`scripts/sync-loop.sh:145`) — it's an unrelated, confusing `unbound variable`
 error thrown before the script's own validation logic ever runs, because
 `set -u` trips on `BASH_SOURCE[0]` first. Anyone hitting this without reading
 the script source would reasonably suspect a broken URL or a bash version
@@ -109,7 +109,7 @@ curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/mai
 
 ## Related
 
-- `README.md:52` — existing one-line warning against piping `sync-loop.sh` directly.
+- `README.md:43` — existing one-line warning against piping `sync-loop.sh` directly.
 - `scripts/sync-loop-remote.sh` — the wrapper that makes the remote-install flow safe.
 - `scripts/sync-loop.sh:5-8` — the path resolution this wrapper exists to satisfy.
-- `scripts/sync-loop.sh:101` — the template-not-found guard that would otherwise be the first error surfaced.
+- `scripts/sync-loop.sh:145` — the template-not-found guard that would otherwise be the first error surfaced.
