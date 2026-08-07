@@ -16,19 +16,19 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
 ```text
 Linear (issue kỹ thuật nguyên tử — nguồn sự thật)
     ↓ Cursor Automation: status → Todo → Generate plan (ce-plan)
-docs/plans/ + comment Linear @owner (kế hoạch xong; không đổi status)
+docs/plans/ + comment Linear cho owner (kế hoạch xong; không đổi status)
     ↓ owner: status → In Progress
     ↓ Cursor Automation: Implement (ce-work) → PR/MR + status In Review
 Đóng vòng sau review (bắt buộc — thuộc “xong”)
     → đánh dấu Definition of Done trên plan
-    → Linear → Done + comment @owner
+    → Linear → Done + comment cho owner
     ↓ Cursor Automation: status → Done → Compound (ce-compound)
 Lặp issue Linear tiếp theo
 ```
 
 **Cursor Automations (ba bước):**
 
-1. **Generate plan** — status → **`Todo`**: báo Linear + Slack đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
+1. **Generate plan** — status → **`Todo`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 3. **Compound** — status → **`Done`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; **không** đổi status khi xong (issue đã ở `Done`).
 
@@ -48,18 +48,18 @@ Chỉ `COMPLETE` khi: acceptance criteria có bằng chứng; các check bắt b
 
 ### Thông báo hoàn thành của agent (bắt buộc)
 
-Khi agent xong việc có ý nghĩa (task/issue xong, owner cần xem kết quả, hoặc user yêu cầu báo cáo), thông báo **chỉ qua Linear** — **không** gửi Slack:
+Khi agent xong việc có ý nghĩa (task/issue xong, owner cần xem kết quả, hoặc user yêu cầu báo cáo), thông báo qua Linear:
 
-1. **Linear** — trên issue kỹ thuật liên quan: `save_comment` với `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` (bắt buộc mention), và/hoặc `save_issue` với `assignee: "me"` khi gán lại cho owner. Ngôn ngữ comment: **tiếng Việt 100%**. Comment ngắn: việc gì xong, kết quả/link chính, bước tiếp theo nếu có.
+1. **Linear** — trên issue kỹ thuật liên quan: `save_comment` (có thể ghi `REPLACE_LINEAR_OWNER_DISPLAY_NAME`), và/hoặc `save_issue` với `assignee: "me"` khi gán lại cho owner. Ngôn ngữ comment: **tiếng Việt 100%**. Comment ngắn: việc gì xong, kết quả/link chính, bước tiếp theo nếu có.
 
-Không dùng Slack / draft / nhắc trong Cursor chat thay cho comment Linear. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project **`REPLACE_LINEAR_PROJECT_NAME`**, rồi comment + (tùy chọn) assign.
+Không chỉ nhắc trong Cursor chat. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project **`REPLACE_LINEAR_PROJECT_NAME`**, rồi comment + (tùy chọn) assign.
 
 ### Quy trình vòng sau `ce-plan` (bắt buộc)
 
 Khi skill **`ce-plan`** (hoặc Cursor Automation chạy `ce-plan` sau status → `Todo`) **đã tạo/cập nhật plan** dưới `docs/plans/`, agent **không** dừng ở Cursor chat. Báo cáo lập kế hoạch là một phần của “xong plan”:
 
 1. **Plan ↔ Linear** — đảm bảo đường dẫn plan đã ghi vào mô tả issue Linear và frontmatter/section plan có `linear_issues:` (xem **Plan ↔ Linear** bên dưới).
-2. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, tóm tắt hướng triển khai / bước tiếp (`ce-work` hoặc chờ owner duyệt).
+2. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, tóm tắt hướng triển khai / bước tiếp (`ce-work` hoặc chờ owner duyệt).
 
 Không chỉ nhắc trong Cursor chat. Áp dụng cả khi `ce-plan` chạy thủ công lẫn qua automation.
 
@@ -69,9 +69,9 @@ Khi skill **`ce-work`** (hoặc Cursor Automation **Implement** sau status → `
 
 1. **Plan (`docs/plans/…`)** — đánh dấu **Definition of Done** (và checkbox unit liên quan nếu có) thành `[x]` khi đã có bằng chứng (build/smoke/commit). Thêm ghi chú smoke/verify ngắn nếu plan còn chỗ trống. *Trong lúc* `ce-work`, vẫn không dùng plan làm task tracker giữa chừng; *sau khi* hoàn tất, **phải** tick DoD — đóng vòng repo này ghi đè hướng dẫn skill chung “đừng sửa thân plan”.
 
-2. **Linear (automation Implement)** — gắn URL PR/MR vào issue; `save_issue` → **`In Review`** (không nhảy thẳng Done). `save_comment` tiếng Việt + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`: đã ship gì, link PR/MR, chờ review.
+2. **Linear (automation Implement)** — gắn URL PR/MR vào issue; `save_issue` → **`In Review`** (không nhảy thẳng Done). `save_comment` tiếng Việt: đã ship gì, link PR/MR, chờ review.
 
-3. **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng. Status → `Done` sẽ tự kích hoạt automation **Compound** (chạy `ce-compound`) — agent không cần tự chạy `ce-compound` tay trong session này.
+3. **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Done`** + comment. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng. Status → `Done` sẽ tự kích hoạt automation **Compound** (chạy `ce-compound`) — agent không cần tự chạy `ce-compound` tay trong session này.
 
 4. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear) sau bước 2 (và bước 3 nếu có).
 
@@ -96,11 +96,11 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 **Quy trình agent**
 - Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
-- **Status → Todo → plan:** owner chuyển issue sang **`Todo`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-plan`**.
+- **Status → Todo → plan:** owner chuyển issue sang **`Todo`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear — xem **Quy trình vòng sau `ce-plan`**.
 - **Status → In Progress → implement:** owner chuyển **`In Progress`** → automation **Implement** chạy **`ce-work`** theo plan gắn issue; gắn URL PR/MR; status → **`In Review`**.
 - **Status → Done → compound:** khi issue chuyển **`Done`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; agent **không** cần tự chạy tay bước này nữa.
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
-- Sau khi review xong (issue **`In Review`** / PR merged): agent hoặc owner đóng vòng → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Automation Implement chỉ đưa tới **In Review**, không tự Done.
+- Sau khi review xong (issue **`In Review`** / PR merged): agent hoặc owner đóng vòng → **`Done`** + comment — xem **Quy trình vòng sau `ce-work`**. Automation Implement chỉ đưa tới **In Review**, không tự Done.
 
 ### Tùy chọn: gắn Cursor `/loop` sau
 
@@ -109,8 +109,8 @@ Khi vòng thủ công đã ổn:
 ```text
 /loop <interval> Chọn Linear issue mở ưu tiên cao nhất trong project REPLACE_LINEAR_PROJECT_NAME
 (ưu tiên In Progress, rồi ưu tiên cao). Nếu chưa có plan thì chạy ce-plan (hoặc chờ
-Cursor Automation sau Todo) rồi comment Linear @owner; không thì ce-work. Kiểm chứng. Chạy đóng vòng
-(DoD + Linear Done + comment Linear @owner).
+Cursor Automation sau Todo) rồi comment Linear cho owner; không thì ce-work. Kiểm chứng. Chạy đóng vòng
+(DoD + Linear Done + comment Linear cho owner).
 Dừng khi BLOCKED / NEEDS_HUMAN_DECISION.
 ```
 
