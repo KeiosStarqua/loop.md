@@ -21,31 +21,46 @@ Tham gia bởi:
 
 Mỗi repo giữ giá trị Linear riêng trong `.cursor/loop.env`. Script copy template rồi thay `REPLACE_*`.
 
-**URL script mới nhất (upstream `loop.md`):**
+**URL remote runner (khuyến nghị — tự tải `sync-loop.sh` + `LOOP.mdc` + `loop.env.example`):**
 
 ```text
-https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop.sh
+https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh
 ```
 
-Không cần clone `my-loop-config` — dùng `scripts/sync-loop-remote.sh` (tải script + `LOOP.mdc` + `loop.env.example` rồi chạy), hoặc clone repo này và chạy `./scripts/sync-loop.sh` trực tiếp.
+### Chạy bằng `curl` (không cần clone)
+
+Trong thư mục repo đích:
 
 ```bash
-# Luôn lấy bản mới từ GitHub (khuyến nghị)
+# 1) Tạo .cursor/loop.env (chỉ lần đầu)
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init
+
+# 2) Điền 5 biến Linear trong .cursor/loop.env
+
+# 3) Sync → ghi .cursor/rules/LOOP.mdc
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s --
+```
+
+Hoặc chỉ định đường dẫn repo (chạy từ bất kỳ đâu):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init /path/to/repo
+# chỉnh /path/to/repo/.cursor/loop.env
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- /path/to/repo
+```
+
+`bash -s --` nhận args sau `--` rồi truyền vào script. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ.
+
+### Clone local
+
+```bash
 /path/to/my-loop-config/scripts/sync-loop-remote.sh --init /path/to/repo
 # chỉnh /path/to/repo/.cursor/loop.env
 /path/to/my-loop-config/scripts/sync-loop-remote.sh /path/to/repo
 
-# Hoặc từ clone local (cùng nội dung với loop.md trên GitHub)
+# Hoặc sync từ tree local (không fetch GitHub)
 ./scripts/sync-loop.sh --init /path/to/repo
 ./scripts/sync-loop.sh /path/to/repo
-```
-
-Trong repo đích (với remote runner):
-
-```bash
-/path/to/my-loop-config/scripts/sync-loop-remote.sh --init
-# điền .cursor/loop.env
-/path/to/my-loop-config/scripts/sync-loop-remote.sh
 ```
 
 Kết quả: `.cursor/rules/LOOP.mdc` với giá trị Linear của repo (không còn placeholder).
@@ -57,22 +72,20 @@ Copy prompt dưới đây khi nhờ agent cài hoặc cập nhật `LOOP.mdc` sa
 ```text
 Dùng sync-loop để cài/cập nhật LOOP.mdc cho từng repo đích. Không copy tay LOOP.mdc.
 
-Luôn lấy script mới nhất từ upstream (hoặc chạy sync-loop-remote.sh nếu có clone local):
+Luôn lấy runner mới nhất qua curl (khuyến nghị — không cần clone):
 
-  URL script:
-    https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop.sh
+  curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- [--init] [<repo>]
 
-  Remote runner (tải script + template rồi chạy — khuyến nghị):
-    <path-to-my-loop-config>/scripts/sync-loop-remote.sh
+  sync-loop-remote.sh tự tải sync-loop.sh + LOOP.mdc + loop.env.example cùng revision.
+  Không pipe sync-loop.sh trực tiếp (thiếu template).
 
-  Script cần LOOP.mdc và loop.env.example cùng revision — sync-loop-remote.sh
-  tự tải từ cùng base URL. Không chỉ curl script rời nếu không có template local.
+  Nếu đã clone my-loop-config: chạy scripts/sync-loop-remote.sh hoặc ./scripts/sync-loop.sh.
 
 Cho mỗi repo đích, lần lượt:
 
 1. Nếu chưa có <repo>/.cursor/loop.env:
-   - Chạy: sync-loop-remote.sh --init <repo>
-     (hoặc sync-loop.sh --init <repo> nếu dùng clone local)
+   - Chạy:
+       curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init <repo>
    - Điền đủ 5 biến Linear trong .cursor/loop.env (hỏi owner nếu thiếu):
      REPLACE_LINEAR_OWNER_DISPLAY_NAME
      REPLACE_LINEAR_WORKSPACE
@@ -81,7 +94,8 @@ Cho mỗi repo đích, lần lượt:
      REPLACE_LINEAR_PROJECT_ID
    - Không commit secret; loop.env chỉ chứa metadata Linear public.
 
-2. Chạy: sync-loop-remote.sh <repo> (hoặc sync-loop.sh <repo>)
+2. Chạy:
+     curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- <repo>
    - Kết quả bắt buộc: <repo>/.cursor/rules/LOOP.mdc
    - File này phải không còn placeholder REPLACE_LINEAR_*
    - Giá trị trong file phải khớp .cursor/loop.env của repo đó
