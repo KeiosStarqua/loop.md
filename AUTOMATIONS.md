@@ -2,6 +2,13 @@
 
 Hai automation tách **lập kế hoạch** và **triển khai**. Cả hai gắn Linear team **Keios**, project **[KT System](https://linear.app/keios/project/kt-system-ea15401361ab)**, checkout GitLab `TaQuangKhoi/kt-system` nhánh `main`. Tools: Linear MCP + Slack MCP. Memory bật; scope private.
 
+**JSON tham chiếu** (export từ Cursor Automations):
+
+| Automation | File |
+|------------|------|
+| KT-System - Generate plan | [`automations/kt-system-generate-plan.json`](./automations/kt-system-generate-plan.json) |
+| KT-System - Implement | [`automations/kt-system-implement.json`](./automations/kt-system-implement.json) |
+
 ```text
 Linear status → Todo
     ↓  Automation: KT-System - Generate plan  (model: cursor-grok-4.5-high)
