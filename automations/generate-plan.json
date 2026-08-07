@@ -1,18 +1,18 @@
 {
-  "name": "KT-System - Generate plan",
+  "name": "Generate plan",
   "triggers": [
     {
       "linear": {
         "statusChanged": {
           "statusIds": [
-            "786e2ae5-c7f3-4888-8fb4-9a6d4f0ad601"
+            "REPLACE_LINEAR_STATUS_TODO_ID"
           ]
         },
         "projectIds": [
-          "5b44e380-e2f4-4bdd-81f9-a0cd29aa2c90"
+          "REPLACE_LINEAR_PROJECT_UUID"
         ],
         "teamIds": [
-          "51744d2d-408f-4a76-922e-262add85cb6f"
+          "REPLACE_LINEAR_TEAM_UUID"
         ]
       }
     }
@@ -45,9 +45,9 @@
   "disabledDefaultTools": [],
   "scope": "private",
   "gitConfig": {
-    "repo": "https://gitlab.com/TaQuangKhoi/kt-system",
+    "repo": "REPLACE_GIT_REPO_URL",
     "repos": [
-      "https://gitlab.com/TaQuangKhoi/kt-system"
+      "REPLACE_GIT_REPO_URL"
     ],
     "branch": "main"
   }

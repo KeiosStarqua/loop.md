@@ -1,35 +1,35 @@
-# KT System — Cursor Automations
+# Cursor Automations (loop mẫu)
 
-Hai automation tách **lập kế hoạch** và **triển khai**. Cả hai gắn Linear team **Keios**, project **[KT System](https://linear.app/keios/project/kt-system-ea15401361ab)**, checkout GitLab `TaQuangKhoi/kt-system` nhánh `main`. Tools: Linear MCP + Slack MCP. Memory bật; scope private.
+Hai automation tách **lập kế hoạch** và **triển khai**. Gắn Linear team/project và git repo của **repo đích** (điền khi tạo automation). Tools: Linear MCP + Slack MCP. Memory bật; scope private.
 
-**JSON tham chiếu** (export từ Cursor Automations):
+**JSON tham chiếu** (export từ Cursor Automations — chỉnh team/project/repo trước khi import):
 
 | Automation | File |
 |------------|------|
-| KT-System - Generate plan | [`automations/kt-system-generate-plan.json`](./automations/kt-system-generate-plan.json) |
-| KT-System - Implement | [`automations/kt-system-implement.json`](./automations/kt-system-implement.json) |
+| Generate plan | [`automations/generate-plan.json`](./automations/generate-plan.json) |
+| Implement | [`automations/implement.json`](./automations/implement.json) |
 
 ```text
 Linear status → Todo
-    ↓  Automation: KT-System - Generate plan  (model: cursor-grok-4.5-high)
+    ↓  Automation: Generate plan  (model: cursor-grok-4.5-high)
 ce-plan → plan dưới docs/plans/  (không đổi status Linear)
     ↓  owner chuyển status → In Progress
-    ↓  Automation: KT-System - Implement  (model: composer-2.5)
+    ↓  Automation: Implement  (model: composer-2.5)
 ce-work → PR/MR + gắn URL Linear → status In Review
 ```
 
-Slack channel gắn project: `C0BN6GATNSH` (dùng khi agent báo Slack).
+Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
 
 ---
 
-## 1. KT-System - Generate plan
+## 1. Generate plan
 
 | Trường | Giá trị |
 |--------|---------|
-| Trigger | Linear status → **Todo** (`786e2ae5-c7f3-4888-8fb4-9a6d4f0ad601`) |
-| Team / Project | Keios / KT System |
+| Trigger | Linear status → **Todo** |
+| Team / Project | Theo repo đích |
 | Model | `cursor-grok-4.5-high` |
-| Repo | `https://gitlab.com/TaQuangKhoi/kt-system` @ `main` |
+| Repo | URL git + nhánh `main` của repo đích |
 
 **Agent làm gì**
 
@@ -41,14 +41,14 @@ Slack channel gắn project: `C0BN6GATNSH` (dùng khi agent báo Slack).
 
 ---
 
-## 2. KT-System - Implement
+## 2. Implement
 
 | Trường | Giá trị |
 |--------|---------|
-| Trigger | Linear status → **In Progress** (`1e014385-ae7f-4991-9487-e5aa3db09044`) |
-| Team / Project | Keios / KT System |
+| Trigger | Linear status → **In Progress** |
+| Team / Project | Theo repo đích |
 | Model | `composer-2.5` |
-| Repo | `https://gitlab.com/TaQuangKhoi/kt-system` @ `main` |
+| Repo | URL git + nhánh `main` của repo đích |
 
 **Agent làm gì**
 
@@ -73,12 +73,6 @@ Không nhảy thẳng Todo → In Progress nếu chưa có plan (Implement cần
 
 ## ID tham chiếu (Linear)
 
-| Thực thể | ID |
-|----------|-----|
-| Team Keios | `51744d2d-408f-4a76-922e-262add85cb6f` |
-| Project KT System | `5b44e380-e2f4-4bdd-81f9-a0cd29aa2c90` |
-| Status Todo | `786e2ae5-c7f3-4888-8fb4-9a6d4f0ad601` |
-| Status In Progress | `1e014385-ae7f-4991-9487-e5aa3db09044` |
-| Status In Review | `a1aa09b7-ecc3-4697-bb37-076aa3fd5301` |
+Điền ID team / project / status của workspace đích khi tạo automation trong Cursor. Các field trong JSON mẫu (`teamIds`, `projectIds`, `statusIds`) là placeholder — thay bằng ID thật trước khi save.
 
 Tạo/chỉnh automation trong [Cursor Automations](https://cursor.com/docs/agent/automations). Chat chỉ prefill editor — save cuối cùng trong UI.

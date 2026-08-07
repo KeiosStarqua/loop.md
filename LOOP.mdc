@@ -116,10 +116,10 @@ Không auto-merge sớm. Ưu tiên một vòng giao tính năng ổn định tr�
 
 ### Checklist REPLACE (điền trước khi dán sang repo khác)
 
-| Placeholder | Ví dụ (KT System) |
-|-------------|-------------------|
-| `REPLACE_LINEAR_OWNER_DISPLAY_NAME` | `taquangkhoi` |
-| `REPLACE_LINEAR_WORKSPACE` | `keios` |
-| `REPLACE_LINEAR_PROJECT_NAME` | `KT System` |
-| `REPLACE_LINEAR_PROJECT_URL` | `https://linear.app/keios/project/kt-system-ea15401361ab/overview` |
-| `REPLACE_LINEAR_PROJECT_ID` | `ea15401361ab` |
+| Placeholder | Ví dụ |
+|-------------|--------|
+| `REPLACE_LINEAR_OWNER_DISPLAY_NAME` | `your-display-name` |
+| `REPLACE_LINEAR_WORKSPACE` | `your-workspace` |
+| `REPLACE_LINEAR_PROJECT_NAME` | `Your Project` |
+| `REPLACE_LINEAR_PROJECT_URL` | `https://linear.app/your-workspace/project/your-project-id/overview` |
+| `REPLACE_LINEAR_PROJECT_ID` | `your-project-id` |
