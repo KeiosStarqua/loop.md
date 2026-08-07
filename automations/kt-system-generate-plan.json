@@ -1,0 +1,54 @@
+{
+  "name": "KT-System - Generate plan",
+  "triggers": [
+    {
+      "linear": {
+        "statusChanged": {
+          "statusIds": [
+            "786e2ae5-c7f3-4888-8fb4-9a6d4f0ad601"
+          ]
+        },
+        "projectIds": [
+          "5b44e380-e2f4-4bdd-81f9-a0cd29aa2c90"
+        ],
+        "teamIds": [
+          "51744d2d-408f-4a76-922e-262add85cb6f"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "mcp": {
+        "server": {
+          "id": "2538444",
+          "name": "Linear"
+        }
+      }
+    },
+    {
+      "mcp": {
+        "server": {
+          "id": "2554779",
+          "name": "Slack"
+        }
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "prompt": "/ce-plan for the issue from Linear. Please use skil ce-plan to make the plan.\nKiểm tra xem plan đã tồn tại chưa.Bước đầu tiên là gửi một thông báo lên Linear và Slack là đã bắt đầu tạo plan.\nKhông đổi status trên Linear khi xong việc tạo.\nKhi có code changes và đã tạo pull request, dùng git để kiểm tra xem có conflict với nhánh main. Nếu có thì phải resolve confict."
+    }
+  ],
+  "model": "cursor-grok-4.5-high",
+  "memoryEnabled": true,
+  "disabledDefaultTools": [],
+  "scope": "private",
+  "gitConfig": {
+    "repo": "https://gitlab.com/TaQuangKhoi/kt-system",
+    "repos": [
+      "https://gitlab.com/TaQuangKhoi/kt-system"
+    ],
+    "branch": "main"
+  }
+}

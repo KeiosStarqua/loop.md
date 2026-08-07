@@ -1,0 +1,54 @@
+{
+  "name": "KT-System - Implement",
+  "triggers": [
+    {
+      "linear": {
+        "statusChanged": {
+          "statusIds": [
+            "1e014385-ae7f-4991-9487-e5aa3db09044"
+          ]
+        },
+        "projectIds": [
+          "5b44e380-e2f4-4bdd-81f9-a0cd29aa2c90"
+        ],
+        "teamIds": [
+          "51744d2d-408f-4a76-922e-262add85cb6f"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "mcp": {
+        "server": {
+          "id": "2538444",
+          "name": "Linear"
+        }
+      }
+    },
+    {
+      "mcp": {
+        "server": {
+          "id": "2554779",
+          "name": "Slack"
+        }
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "prompt": "/ce-work  for the plan that attach to Linear issue.\nBước đầu tiên là gửi một thông báo lên Linear là đã bắt đầu triển khai.\nGán url của pull/merge request vào Linear issue.\nKhi có code changes và đã tạo pull request, dùng git để kiểm tra xem có conflict với nhánh main. Nếu có thì phải resolve confict.\n"
+    }
+  ],
+  "model": "composer-2.5",
+  "memoryEnabled": true,
+  "disabledDefaultTools": [],
+  "scope": "private",
+  "gitConfig": {
+    "repo": "https://gitlab.com/TaQuangKhoi/kt-system",
+    "repos": [
+      "https://gitlab.com/TaQuangKhoi/kt-system"
+    ],
+    "branch": "main"
+  }
+}
