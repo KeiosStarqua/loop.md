@@ -1,6 +1,6 @@
 # Cursor Automations (loop mẫu)
 
-Hai automation tách **lập kế hoạch** và **triển khai**. Gắn Linear team/project và git repo của **repo đích** (điền khi tạo automation). Tools: Linear MCP + Slack MCP. Memory bật; scope private.
+Ba automation tách **lập kế hoạch**, **triển khai** và **đúc kết (compound)**. Gắn Linear team/project và git repo của **repo đích** (điền khi tạo automation). Tools: Linear MCP (+ Slack MCP cho hai automation đầu). Memory bật; scope private.
 
 **JSON tham chiếu** (export từ Cursor Automations — chỉnh team/project/repo trước khi import):
 
@@ -8,6 +8,7 @@ Hai automation tách **lập kế hoạch** và **triển khai**. Gắn Linear t
 |------------|------|
 | Generate plan | [`automations/generate-plan.json`](./automations/generate-plan.json) |
 | Implement | [`automations/implement.json`](./automations/implement.json) |
+| Compound | [`automations/compound.json`](./automations/compound.json) |
 
 ```text
 Linear status → Todo
@@ -16,6 +17,9 @@ ce-plan → plan dưới docs/plans/  (không đổi status Linear)
     ↓  owner chuyển status → In Progress
     ↓  Automation: Implement  (model: composer-2.5)
 ce-work → PR/MR + gắn URL Linear → status In Review
+    ↓  review xong → agent/owner chuyển status → Done
+    ↓  Automation: Compound  (model: cursor-grok-4.5-high)
+ce-compound → ghi learning/DOX (không đổi status Linear)
 ```
 
 Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
@@ -60,12 +64,29 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 
 ---
 
+## 3. Compound
+
+| Trường | Giá trị |
+|--------|---------|
+| Trigger | Linear status → **Done** |
+| Team / Project | Theo repo đích |
+| Model | `cursor-grok-4.5-high` |
+| Repo | URL git + nhánh `main` của repo đích |
+
+**Agent làm gì**
+
+1. Chạy `/ce-compound` (skill `ce-compound`) để ghi lại learning vừa xong dưới dạng durable — xem `ce-compound/SKILL.md`.
+2. Không đổi status Linear khi xong (issue đã ở **Done**).
+
+---
+
 ## Cách dùng (owner)
 
 1. Issue vào **Todo** → chờ Generate plan xong (status giữ Todo).
 2. Duyệt plan trên Linear / `docs/plans/`.
 3. Chuyển **In Progress** → Implement chạy; khi xong issue vào **In Review**.
 4. Review PR/MR → merge / Done theo quy trình đóng vòng trong `LOOP.md`.
+5. Issue vào **Done** → Compound tự chạy `ce-compound` để đúc kết learning.
 
 Không nhảy thẳng Todo → In Progress nếu chưa có plan (Implement cần plan gắn issue).
 

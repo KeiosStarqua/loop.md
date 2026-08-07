@@ -1,0 +1,46 @@
+{
+  "name": "Compound",
+  "triggers": [
+    {
+      "linear": {
+        "statusChanged": {
+          "statusIds": [
+            "REPLACE_LINEAR_STATUS_DONE_ID"
+          ]
+        },
+        "projectIds": [
+          "REPLACE_LINEAR_PROJECT_UUID"
+        ],
+        "teamIds": [
+          "REPLACE_LINEAR_TEAM_UUID"
+        ]
+      }
+    }
+  ],
+  "actions": [
+    {
+      "mcp": {
+        "server": {
+          "id": "2538444",
+          "name": "Linear"
+        }
+      }
+    }
+  ],
+  "prompts": [
+    {
+      "prompt": "/ce-compound "
+    }
+  ],
+  "model": "cursor-grok-4.5-high",
+  "memoryEnabled": true,
+  "disabledDefaultTools": [],
+  "scope": "private",
+  "gitConfig": {
+    "repo": "REPLACE_GIT_REPO_URL",
+    "repos": [
+      "REPLACE_GIT_REPO_URL"
+    ],
+    "branch": "main"
+  }
+}

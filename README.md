@@ -13,7 +13,7 @@ Tham gia bởi:
 
 | File | Nội dung |
 |------|----------|
-| [`AUTOMATIONS.md`](./AUTOMATIONS.md) | Hai automation mẫu: **Generate plan** (`Todo`) và **Implement** (`In Progress`) |
+| [`AUTOMATIONS.md`](./AUTOMATIONS.md) | Ba automation mẫu: **Generate plan** (`Todo`), **Implement** (`In Progress`) và **Compound** (`Done`) |
 | [`LOOP.md`](./LOOP.md) | Đặc tả vòng giao tính năng (đồng bộ với `LOOP.mdc`) |
 | [`AGENTS.md`](./AGENTS.md) | Quy tắc đồng bộ `LOOP.md` ↔ `LOOP.mdc` |
 

@@ -18,14 +18,15 @@ docs/plans/ + comment Linear @owner (kế hoạch xong; không đổi status)
 Đóng vòng sau review (bắt buộc — thuộc “xong”)
     → đánh dấu Definition of Done trên plan
     → Linear → Done + comment @owner
-    → tùy chọn: compound / DOX / cập nhật memory giải pháp
+    ↓ Cursor Automation: status → Done → Compound (ce-compound)
 Lặp issue Linear tiếp theo
 ```
 
-**Cursor Automations (hai bước — chi tiết `AUTOMATIONS.md`):**
+**Cursor Automations (ba bước — chi tiết `AUTOMATIONS.md`):**
 
 1. **Generate plan** — status → **`Todo`**: báo Linear + Slack đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
+3. **Compound** — status → **`Done`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; **không** đổi status khi xong (issue đã ở `Done`).
 
 **Sau khi `ce-plan` xong** (manual hoặc automation), agent **phải** comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
 
@@ -66,7 +67,7 @@ Khi skill **`ce-work`** (hoặc Cursor Automation **Implement** sau status → `
 
 2. **Linear (automation Implement)** — gắn URL PR/MR vào issue; `save_issue` → **`In Review`** (không nhảy thẳng Done). `save_comment` tiếng Việt + `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`: đã ship gì, link PR/MR, chờ review.
 
-3. **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng.
+3. **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME`. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng. Status → `Done` sẽ tự kích hoạt automation **Compound** (chạy `ce-compound`) — agent không cần tự chạy `ce-compound` tay trong session này.
 
 4. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear) sau bước 2 (và bước 3 nếu có).
 
@@ -93,6 +94,7 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
 - **Status → Todo → plan:** owner chuyển issue sang **`Todo`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-plan`**.
 - **Status → In Progress → implement:** owner chuyển **`In Progress`** → automation **Implement** chạy **`ce-work`** theo plan gắn issue; gắn URL PR/MR; status → **`In Review`**.
+- **Status → Done → compound:** khi issue chuyển **`Done`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; agent **không** cần tự chạy tay bước này nữa.
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
 - Sau khi review xong (issue **`In Review`** / PR merged): agent hoặc owner đóng vòng → **`Done`** + comment `@REPLACE_LINEAR_OWNER_DISPLAY_NAME` — xem **Quy trình vòng sau `ce-work`**. Automation Implement chỉ đưa tới **In Review**, không tự Done.
 
