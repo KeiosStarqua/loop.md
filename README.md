@@ -27,61 +27,35 @@ Mỗi repo giữ giá trị Linear riêng trong `.cursor/loop.env`. Script copy 
 https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh
 ```
 
-### Một lệnh duy nhất (`--setup`)
+### Cách đơn giản nhất — 1 lệnh, không cần flag
 
-Gộp cả 3 bước (tạo `loop.env` → điền giá trị Linear → sync `LOOP.mdc`) thành **1 lệnh**, không cần chạy `curl` hai lần hay tự sửa file:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --setup \
-  --owner "taquangkhoi" \
-  --workspace "keios" \
-  --project-name "Ten Project" \
-  --project-url "https://linear.app/keios/project/ten-project-xxxx/overview" \
-  --project-id "xxxx" \
-  /path/to/repo
-```
-
-- Nếu `<repo>/.cursor/loop.env` **chưa có**: tạo file từ 5 flag trên rồi sync ngay.
-- Nếu **đã có**: giữ nguyên, bỏ qua các flag, chỉ sync (idempotent — chạy lại nhiều lần không sao). Thêm `--force` nếu muốn ghi đè bằng giá trị flag mới.
-- Thiếu flag mà `loop.env` chưa tồn tại → lỗi rõ tên flag còn thiếu, không tạo file nửa vời.
-
-### Chạy bằng `curl` (không cần clone)
-
-Trong thư mục repo đích:
+Trong thư mục repo đích (hoặc chỉ định đường dẫn):
 
 ```bash
-# 1) Tạo .cursor/loop.env (chỉ lần đầu)
-curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init
-
-# 2) Điền 5 biến Linear trong .cursor/loop.env
-
-# 3) Sync → ghi .cursor/rules/LOOP.mdc
-curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s --
+curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash
+# hoặc: ... | bash -s -- /path/to/repo
 ```
 
-Hoặc chỉ định đường dẫn repo (chạy từ bất kỳ đâu):
+- Chưa có `.cursor/loop.env` → **tự tạo** từ `loop.env.example` (giá trị mặc định `your-*`) rồi sync luôn, **không lỗi**.
+- Đã có `.cursor/loop.env` → dùng luôn giá trị đó để sync (chạy lại bao nhiêu lần cũng an toàn).
+- Nếu giá trị mặc định (`your-display-name`, `your-workspace`...) không đúng cho repo này: mở `.cursor/loop.env` sửa 5 biến Linear cho đúng, rồi chạy lại đúng lệnh trên — không cần bước riêng nào khác.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --init /path/to/repo
-# chỉnh /path/to/repo/.cursor/loop.env
-curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- /path/to/repo
-```
-
-`bash -s --` nhận args sau `--` rồi truyền vào script. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ.
+`bash -s --` dùng khi cần truyền thêm đường dẫn repo. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ.
 
 ### Clone local
 
 ```bash
-/path/to/my-loop-config/scripts/sync-loop-remote.sh --init /path/to/repo
-# chỉnh /path/to/repo/.cursor/loop.env
-/path/to/my-loop-config/scripts/sync-loop-remote.sh /path/to/repo
-
-# Hoặc sync từ tree local (không fetch GitHub)
-./scripts/sync-loop.sh --init /path/to/repo
 ./scripts/sync-loop.sh /path/to/repo
 ```
 
-Kết quả: `.cursor/rules/LOOP.mdc` với giá trị Linear của repo (không còn placeholder).
+Kết quả: `.cursor/rules/LOOP.mdc` với giá trị Linear của repo (không còn placeholder REPLACE_*, có thể là giá trị mặc định nếu chưa sửa `loop.env`).
+
+### Tuỳ chọn nâng cao
+
+| Flag | Khi nào dùng |
+|------|--------------|
+| `--init` | Chỉ tạo `.cursor/loop.env` từ mẫu, **không** sync ngay — dùng khi muốn sửa giá trị trước |
+| `--setup --owner ... --workspace ... --project-name ... --project-url ... --project-id ...` | Tạo `loop.env` với giá trị Linear thật ngay từ đầu (bỏ qua bước sửa tay), rồi sync. Idempotent nếu `loop.env` đã có; thêm `--force` để ghi đè |
 
 ## Prompt cho agent (sync từng repo)
 

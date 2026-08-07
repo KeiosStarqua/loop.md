@@ -23,9 +23,13 @@ Usage:
                --project-url URL --project-id ID [--force] [TARGET_REPO]
 
   Không có flag: copy LOOP.mdc → TARGET/.cursor/rules/LOOP.mdc
-                và thay REPLACE_* bằng giá trị trong TARGET/.cursor/loop.env
+                và thay REPLACE_* bằng giá trị trong TARGET/.cursor/loop.env.
+                Nếu TARGET/.cursor/loop.env chưa có → tự tạo từ loop.env.example
+                rồi sync ngay (không lỗi). Sửa lại loop.env rồi chạy lần nữa
+                nếu giá trị mặc định không đúng cho repo này.
 
-  --init        tạo TARGET/.cursor/loop.env từ loop.env.example (không ghi đè)
+  --init        chỉ tạo TARGET/.cursor/loop.env từ loop.env.example (không ghi đè,
+                không sync) — dùng khi muốn sửa trước khi sync
 
   --setup       làm cả 3 bước trong 1 lệnh: tạo loop.env từ 5 flag Linear
                 (nếu chưa có, hoặc ghi đè nếu kèm --force) rồi sync ngay.
@@ -139,7 +143,11 @@ cmd_sync() {
   local key tmp
 
   [[ -f "$TEMPLATE" ]] || die "không tìm thấy template: $TEMPLATE"
-  [[ -f "$env_file" ]] || die "chưa có $env_file — chạy: $0 --init \"$target\""
+
+  if [[ ! -f "$env_file" ]]; then
+    cmd_init "$target"
+    echo "  (dùng giá trị Linear mặc định trong loop.env.example — sửa $env_file rồi chạy lại nếu không đúng cho repo này)"
+  fi
 
   load_env_file "$env_file"
   require_placeholders
