@@ -62,6 +62,7 @@ Quy tắc chung — gắn URL PR/MR (bắt buộc): bất kỳ bước nào tạ
 | `ce-plan` only produces a plan (no PR opened) | No PR → no URL | Yes — plan path + next step |
 | `ce-plan` or Generate plan creates PR | **Yes — immediately** | Yes — plan done; mention PR if relevant |
 | `ce-work` / Implement completes | **Yes — before In Review** | Yes — ship summary + link |
+| `ce-compound` / Compound creates doc/code changes | **Yes — immediately** | Yes — compound summary |
 
 ## Related
 

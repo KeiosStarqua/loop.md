@@ -19,7 +19,7 @@ ce-plan → plan dưới docs/plans/  (không đổi status Linear)
 ce-work → PR/MR + gắn URL Linear → status In Review
     ↓  review xong → agent/owner chuyển status → Done
     ↓  Automation: Compound  (model: cursor-grok-4.5-high)
-ce-compound → ghi learning/DOX (không đổi status Linear)
+ce-compound → ghi learning/DOX → PR/MR + gắn URL Linear (nếu có thay đổi) (không đổi status Linear)
 ```
 
 Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
@@ -78,7 +78,8 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 **Agent làm gì**
 
 1. Chạy `/ce-compound` (skill `ce-compound`) để ghi lại learning vừa xong dưới dạng durable — xem `ce-compound/SKILL.md`.
-2. Không đổi status Linear khi xong (issue đã ở **Done**).
+2. Nếu có thay đổi (code changes / docs), bắt buộc tạo pull request / merge request, gán URL PR/MR vào issue Linear, và dùng git kiểm tra conflict với `main` (nếu có thì resolve).
+3. Không đổi status Linear khi xong (issue đã ở **Done**).
 
 ---
 

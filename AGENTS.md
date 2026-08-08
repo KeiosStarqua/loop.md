@@ -3,6 +3,8 @@
 LOOP.mdc là để dùng cho Cursor Rules, không xoá frontmatter trong *.mdc
 
 Không chỉnh sửa `LOOP.md` hoặc `LOOP.mdc` trừ khi có yêu cầu rõ ràng
+
+Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`
 # DOX framework
 
 - DOX is highly performant AGENTS.md hierarchy installed here
@@ -82,6 +84,8 @@ Default section order:
 ## User Preferences
 
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
+
+- Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
 
 ## Child DOX Index
 
