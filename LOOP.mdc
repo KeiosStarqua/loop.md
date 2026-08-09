@@ -22,7 +22,7 @@ docs/plans/ + comment Linear cho owner (kế hoạch xong; không đổi status)
 Đóng vòng sau review (bắt buộc — thuộc “xong”)
     → đánh dấu Definition of Done trên plan
     → Linear → Done + comment cho owner
-    ↓ Cursor Automation: status → Done → Compound (ce-compound) → PR/MR + gắn URL Linear (nếu có thay đổi)
+    ↓ Cursor Automation: status → Done → Compound (ce-compound) → PR/MR + gắn URL Linear (nếu có thay đổi); nếu nhánh ce-work đã merge → clean branches
 Lặp issue Linear tiếp theo
 ```
 
@@ -30,7 +30,7 @@ Lặp issue Linear tiếp theo
 
 1. **Generate plan** — status → **`Todo`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì gắn URL PR/MR vào Linear và kiểm tra/resolve conflict với `main`.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
-3. **Compound** — status → **`Done`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; nếu có thay đổi thì bắt buộc tạo pull/merge request, gán URL PR/MR vào Linear, và kiểm tra/resolve conflict với `main`; **không** đổi status khi xong (issue đã ở `Done`).
+3. **Compound** — status → **`Done`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; nếu có thay đổi thì bắt buộc tạo pull/merge request, gán URL PR/MR vào Linear, và kiểm tra/resolve conflict với `main`; kiểm tra nhánh tạo lúc **`ce-work`** đã merge chưa — nếu đã merge thì **clean branches**; **không** đổi status khi xong (issue đã ở `Done`).
 
 **Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ bước nào tạo pull/merge request (dù là `ce-plan`, `ce-work`, automation, hay chạy tay) đều **phải** gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo — không chờ tới bước tổng kết mới gắn.
 
@@ -100,7 +100,7 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
 - **Status → Todo → plan:** owner chuyển issue sang **`Todo`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear — xem **Quy trình vòng sau `ce-plan`**.
 - **Status → In Progress → implement:** owner chuyển **`In Progress`** → automation **Implement** chạy **`ce-work`** theo plan gắn issue; gắn URL PR/MR; status → **`In Review`**.
-- **Status → Done → compound:** khi issue chuyển **`Done`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; nếu có thay đổi thì tạo PR/MR + gắn URL vào Linear; agent **không** cần tự chạy tay bước này nữa.
+- **Status → Done → compound:** khi issue chuyển **`Done`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; nếu có thay đổi thì tạo PR/MR + gắn URL vào Linear; kiểm tra nhánh tạo lúc **`ce-work`** đã merge chưa — nếu đã merge thì **clean branches**; agent **không** cần tự chạy tay bước này nữa.
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
 - Sau khi review xong (issue **`In Review`** / PR merged): agent hoặc owner đóng vòng → **`Done`** + comment — xem **Quy trình vòng sau `ce-work`**. Automation Implement chỉ đưa tới **In Review**, không tự Done.
 
