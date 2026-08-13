@@ -16,4 +16,4 @@ The install toolchain that copies a rendered `LOOP.mdc` into a target repo's `.c
 ## Automation
 
 ### Cursor Automations
-The three Linear status-triggered automation steps defined in LOOP: **Generate plan** (`Todo` → `ce-plan`), **Implement** (`In Progress` → `ce-work`), and **Compound** (`Done` → `ce-compound`). Owner visibility during these steps is Linear-only. Any step that creates a pull or merge request must attach that URL to the related Linear issue immediately — not only during Implement.
+The three Linear status-triggered automation steps defined in LOOP: **Generate plan** (`Plan` → `ce-plan`), **Implement** (`In Progress` → `ce-work`), and **Compound** (`Compound` → `ce-compound`). Owner visibility during these steps is Linear-only. Any step that creates a pull or merge request must attach that URL to the related Linear issue immediately — not only during Implement.

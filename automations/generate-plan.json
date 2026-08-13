@@ -5,7 +5,7 @@
       "linear": {
         "statusChanged": {
           "statusIds": [
-            "REPLACE_LINEAR_STATUS_TODO_ID"
+            "REPLACE_LINEAR_STATUS_PLAN_ID"
           ]
         },
         "projectIds": [

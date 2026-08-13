@@ -26,7 +26,7 @@ That duplicated the owner channel, added setup noise for repos that do not use S
 Agent completion and step-start signals in LOOP are **Linear-only**:
 
 1. **Single channel** — meaningful work completion is reported with Linear `save_comment` on the related technical issue (and optionally `save_issue` with `assignee: "me"` when re-assigning to the owner). Do not add Slack send/draft steps to LOOP.
-2. **Generate plan automation** — when status → `Todo`, notify **Linear** that planning started; run `ce-plan`; do not change status when done (`LOOP.md:27`).
+2. **Generate plan automation** — when status → `Plan`, notify **Linear** that planning started; run `ce-plan`; do not change status when done (`LOOP.md:27`).
 3. **Comment content** — Vietnamese 100%; short summary of what finished, main result/link, next step if any. Owner display name via placeholder `REPLACE_LINEAR_OWNER_DISPLAY_NAME` is optional in the comment, not a separate Slack mention (`LOOP.md:49`).
 4. **Not Cursor chat** — "Không chỉ nhắc trong Cursor chat" remains: the Linear comment is the durable handoff (`LOOP.md:51`).
 5. **Sync both files** — any notification change must land in **both** `LOOP.md` and `LOOP.mdc` (body identical; keep `LOOP.mdc` frontmatter). `AGENTS.md` restricts edits to explicit user requests.

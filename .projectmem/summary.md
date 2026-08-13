@@ -1,6 +1,6 @@
 # projectmem - my-loop-config
 
-_Last updated: 2026-08-07_
+_Last updated: 2026-08-12_
 
 ## Project purpose
 Replace this placeholder with a concise description of what this project does, who it serves, and the main technologies or runtime assumptions.
@@ -11,6 +11,7 @@ Replace this placeholder with a concise description of what this project does, w
 ## Decisions
 - Không đề cập AUTOMATIONS.md trong LOOP.md / LOOP.mdc — các file này được copy vào từng repo và LOOP.mdc thành Cursor rule; chi tiết automation chỉ giữ ở AUTOMATIONS.md trong repo config.
 - Thông báo hoàn thành agent chỉ qua Linear comment (save_comment) — bỏ gửi message Slack khỏi LOOP.md/LOOP.mdc [LOOP.md]
+- Linear automation triggers: Todo → Plan, Done → Compound. In Progress / In Review unchanged. Đóng vòng sau review chuyển sang Compound (không còn Done) để kích hoạt ce-compound. [LOOP.md]
 
 ## Notes
 - feat: add remote sync-loop runner from GitHub raw URL
