@@ -13,7 +13,7 @@ Ba automation tách **lập kế hoạch**, **triển khai** và **đúc kết (
 ```text
 Linear status → Plan
     ↓  Automation: Generate plan  (model: cursor-grok-4.5-high)
-ce-plan → plan dưới docs/plans/  (không đổi status Linear)
+ce-plan → plan dưới docs/plans/ + auto-merge PR của plan (không đổi status Linear)
     ↓  owner chuyển status → In Progress
     ↓  Automation: Implement  (model: composer-2.5)
 kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + gắn URL Linear → status In Review
@@ -43,7 +43,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 2. Kiểm tra plan đã tồn tại chưa (tránh tạo trùng).
 3. Chạy `/ce-plan` (skill `ce-plan`) cho issue Linear.
 4. **Không** đổi status Linear khi xong.
-5. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve.
+5. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
 
 ---
 

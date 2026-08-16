@@ -12,7 +12,7 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
 ```text
 Linear (issue kỹ thuật nguyên tử — nguồn sự thật)
     ↓ Cursor Automation: status → Plan → Generate plan (ce-plan)
-docs/plans/ + comment Linear cho owner (kế hoạch xong; không đổi status)
+docs/plans/ + auto-merge PR của plan + comment Linear cho owner (kế hoạch xong; không đổi status)
     ↓ owner: status → In Progress
     ↓ Cursor Automation: Implement (kiểm tra PR plan đã merge trên Git/Linear chưa; nếu chưa → stop & status Todo; nếu rồi → ce-work) → PR/MR + status In Review
 Đóng vòng sau review (bắt buộc — thuộc “xong”)
@@ -24,13 +24,13 @@ Lặp issue Linear tiếp theo
 
 **Cursor Automations (ba bước):**
 
-1. **Generate plan** — status → **`Plan`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; **không** đổi status khi xong; nếu có PR thì gắn URL PR/MR vào Linear và kiểm tra/resolve conflict với `main`.
+1. **Generate plan** — status → **`Plan`**: báo Linear đã bắt đầu; chạy **`ce-plan`**; kiểm tra plan đã tồn tại; nếu có PR/MR chứa plan thì kiểm tra/resolve conflict với `main`, auto-merge PR vào nhánh chính (`main`), và gắn URL PR/MR vào Linear; **không** đổi status khi xong.
 2. **Implement** — status → **`In Progress`**: báo Linear đã bắt đầu; kiểm tra trên Git provider (GitHub/GitLab) và trên Linear xem plan của task / PR của plan đã được merge chưa — nếu chưa thì **stop**, chuyển status issue trên Linear về **`Todo`** và comment Linear nêu rõ lý do; nếu đã merge thì chạy **`ce-work`** theo plan gắn issue; gán URL PR/MR vào Linear; đổi status → **`In Review`** khi xong; nếu có PR thì kiểm tra/resolve conflict với `main`.
 3. **Compound** — status → **`Compound`**: chạy **`ce-compound`** để ghi lại learning/DOX của issue vừa đóng vòng; nếu có thay đổi thì bắt buộc tạo pull/merge request, gán URL PR/MR vào Linear, và kiểm tra/resolve conflict với `main`; kiểm tra nhánh tạo lúc **`ce-work`** đã merge chưa — nếu đã merge thì **clean branches**; **không** đổi status khi xong (issue đã ở `Compound`).
 
 **Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ bước nào tạo pull/merge request (dù là `ce-plan`, `ce-work`, automation, hay chạy tay) đều **phải** gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo — không chờ tới bước tổng kết mới gắn.
 
-**Sau khi `ce-plan` xong** (manual hoặc automation), agent **phải** comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
+**Sau khi `ce-plan` xong** (manual hoặc automation), nếu có PR tạo bởi bước lập kế hoạch thì agent **phải auto-merge PR của plan vào `main`**, và comment Linear theo **Thông báo hoàn thành của agent** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
 
 Một đặc tả vòng nên có ít nhất: Trigger, Goal, Available context, Permitted actions, Verification, Failure handling, Memory update, Stopping conditions.
 
@@ -54,10 +54,11 @@ Không chỉ nhắc trong Cursor chat. Nếu chưa có Linear issue phù hợp, 
 
 ### Quy trình vòng sau `ce-plan` (bắt buộc)
 
-Khi skill **`ce-plan`** (hoặc Cursor Automation chạy `ce-plan` sau status → `Plan`) **đã tạo/cập nhật plan** dưới `docs/plans/`, agent **không** dừng ở Cursor chat. Báo cáo lập kế hoạch là một phần của “xong plan”:
+Khi skill **`ce-plan`** (hoặc Cursor Automation chạy `ce-plan` sau status → `Plan`) **đã tạo/cập nhật plan** dưới `docs/plans/`, agent **không** dừng ở Cursor chat. Báo cáo lập kế hoạch và auto-merge PR plan là một phần của “xong plan”:
 
 1. **Plan ↔ Linear** — đảm bảo đường dẫn plan đã ghi vào mô tả issue Linear và frontmatter/section plan có `linear_issues:` (xem **Plan ↔ Linear** bên dưới).
-2. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, tóm tắt hướng triển khai / bước tiếp (`ce-work` hoặc chờ owner duyệt).
+2. **Auto-merge PR của plan** — nếu bước `ce-plan` tạo PR/MR chứa file plan (hoặc commit trên branch riêng), agent **bắt buộc tự động merge (auto-merge)** pull/merge request đó vào nhánh chính (`main`) sau khi kiểm tra không có conflict, và gắn URL PR/MR vào Linear.
+3. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, trạng thái merge PR của plan, tóm tắt hướng triển khai / bước tiếp (`ce-work` hoặc chờ owner duyệt).
 
 Không chỉ nhắc trong Cursor chat. Áp dụng cả khi `ce-plan` chạy thủ công lẫn qua automation.
 
@@ -95,7 +96,7 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 **Quy trình agent**
 - Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
 - Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
-- **Status → Plan → plan:** owner chuyển issue sang **`Plan`** → automation **Generate plan** chạy **`ce-plan`** (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear — xem **Quy trình vòng sau `ce-plan`**.
+- **Status → Plan → plan:** owner chuyển issue sang **`Plan`** → automation **Generate plan** chạy **`ce-plan`**; nếu có PR/MR chứa plan thì resolve conflict, auto-merge vào `main`, và gắn URL PR/MR vào Linear (không đổi status khi xong). Sau `ce-plan`, **bắt buộc** comment Linear — xem **Quy trình vòng sau `ce-plan`**.
 - **Status → In Progress → implement:** owner chuyển **`In Progress`** → automation **Implement** kiểm tra trên Git provider (GitHub/GitLab) và Linear xem plan / PR của plan đã merge chưa — nếu chưa thì **stop**, chuyển status về **`Todo`** và comment; nếu đã merge thì chạy **`ce-work`** theo plan gắn issue; gắn URL PR/MR; status → **`In Review`**.
 - **Status → Compound → compound:** khi issue chuyển **`Compound`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; nếu có thay đổi thì tạo PR/MR + gắn URL vào Linear; kiểm tra nhánh tạo lúc **`ce-work`** đã merge chưa — nếu đã merge thì **clean branches**; agent **không** cần tự chạy tay bước này nữa.
 - **Plan ↔ Linear (bắt buộc):** khi plan gắn issue Linear, ghi đường dẫn plan tương đối vào mô tả issue (ví dụ `docs/plans/feature-x.md`). Nhiều plan: mỗi path một dòng. Đổi tên/di chuyển/xóa plan thì cập nhật mọi Linear issue liên quan. Frontmatter / section của plan phải liệt kê `linear_issues:` (URL/ID issue) chiều ngược lại.
