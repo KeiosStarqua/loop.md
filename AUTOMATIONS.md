@@ -16,7 +16,7 @@ Linear status → Plan
 ce-plan → plan dưới docs/plans/ + auto-merge PR của plan (không đổi status Linear)
     ↓  owner chuyển status → In Progress
     ↓  Automation: Implement  (model: composer-2.5)
-kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + gắn URL Linear → status In Review
+kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + auto-merge PR của ce-work + gắn URL Linear → status In Review
     ↓  review xong → agent/owner chuyển status → Compound
     ↓  Automation: Compound  (model: cursor-grok-4.5-high)
 ce-compound → ghi learning/DOX → PR/MR + gắn URL Linear (nếu có thay đổi) (không đổi status Linear)
@@ -64,8 +64,8 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
    - Nếu đã merge: tiếp tục bước 3.
 3. Chạy `/ce-work` theo plan gắn issue Linear.
 4. Gán URL pull/merge request vào issue Linear.
-5. Đổi status Linear → **In Review** khi xong.
-6. Nếu đã có code changes + PR/MR: `git` kiểm tra conflict với `main`; có thì resolve.
+5. Nếu đã có code changes + PR/MR: `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
+6. Đổi status Linear → **In Review** khi xong.
 
 ---
 
