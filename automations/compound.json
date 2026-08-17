@@ -29,7 +29,7 @@
   ],
   "prompts": [
     {
-      "prompt": "/ce-compound "
+      "prompt": "/ce-compound để ghi learning/DOX cho issue Linear vừa đóng vòng.\nNếu có thay đổi: tạo PR/MR, gán URL vào Linear, resolve conflict với main nếu cần, rồi auto-merge PR vào main.\nNếu nhánh ce-work đã merge: clean branches.\nKhi xong: tự đổi status Linear → Done. Comment Linear tiếng Việt: đã đúc kết gì, issue đã Done.\nLàm theo LOOP.md / LOOP.mdc của repo.\n"
     }
   ],
   "model": "cursor-grok-4.5-high",

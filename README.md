@@ -1,6 +1,8 @@
 # my-loop-config
 
-Repo này chứa template **loop engineering** (`LOOP.md` / `LOOP.mdc` / `AGENTS.md`) và cấu hình Cursor Automations mẫu (Generate plan / Implement).
+Repo này chứa template **loop engineering** (`LOOP.md` / `LOOP.mdc` / `AGENTS.md`) và cấu hình Cursor Automations mẫu (Generate plan / Implement / Compound).
+
+**Happy path status:** `Plan` → (ce-plan, auto-merge, auto → `In Progress`) → `In Progress` → (ce-work, auto-merge, auto → `Compound`) → `Compound` → (ce-compound, auto-merge nếu có, auto → `Done`). **Serial Plan:** một issue vào Plan tại một thời điểm. Chi tiết: [`AUTOMATIONS.md`](./AUTOMATIONS.md), [`LOOP.md`](./LOOP.md).
 
 Tham gia bởi:
 

@@ -26,12 +26,12 @@ In the loop workflow, after completing implementation (`ce-work`), code changes 
    - Auto-merge the pull/merge request into `main`.
    - Attach the PR/MR URL to the Linear issue immediately.
 2. **Post-`ce-work` Status and Notification:**
-   - Update the Linear issue status to `In Review`.
-   - Send a Linear comment (100% Vietnamese) to the owner with what was shipped, PR/MR URL, auto-merge status, and waiting for review/compound.
+   - Update the Linear issue status to `Compound` (happy path; do **not** stop at `In Review`).
+   - Send a Linear comment (100% Vietnamese) to the owner with what was shipped, PR/MR URL, auto-merge status, and that status moved to Compound.
 3. **Sync surfaces:**
    - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
    - Update `AUTOMATIONS.md` for operator-level details.
-   - Never edit prompts inside `automations/*.json`.
+   - When the LOOP status contract changes, sync prompt samples in `automations/*.json` to match (do not invent unsaved Cursor UI steps).
 
 ## Why This Matters
 

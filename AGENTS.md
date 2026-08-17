@@ -4,7 +4,7 @@ LOOP.mdc là để dùng cho Cursor Rules, không xoá frontmatter trong *.mdc
 
 Không chỉnh sửa `LOOP.md` hoặc `LOOP.mdc` trừ khi có yêu cầu rõ ràng
 
-Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`
+Khi flow LOOP đổi: cập nhật `LOOP.md` / `LOOP.mdc` trước; được phép đồng bộ prompt mẫu trong `automations/*.json` cho khớp — không invent / save Cursor Automations UI
 # DOX framework
 
 - DOX is highly performant AGENTS.md hierarchy installed here
@@ -85,9 +85,11 @@ Default section order:
 
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
-- Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
-- Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`.
-- Cho phép tự động merge pull/merge request sau bước `ce-work`.
+- Không tạo/sửa Cursor Automations trong UI từ task docs (Keios đã cấu hình sẵn); cập nhật hợp đồng trong `LOOP.md` / `LOOP.mdc`. Khi flow đổi, được phép đồng bộ prompt mẫu trong `automations/*.json` cho khớp LOOP — không invent bước UI chưa save.
+- Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`, rồi tự đổi Linear status → **In Progress**.
+- Cho phép tự động merge pull/merge request sau bước `ce-work`, rồi tự đổi Linear status → **Compound** (không dừng ở In Review).
+- Cho phép tự động merge pull/merge request sau bước `ce-compound` (nếu có), rồi tự đổi Linear status → **Done**.
+- **Serial Plan:** đưa issue sang Plan một issue một lúc; chờ Done rồi mới Plan issue tiếp theo.
 
 ## Child DOX Index
 

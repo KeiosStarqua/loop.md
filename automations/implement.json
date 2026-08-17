@@ -37,7 +37,7 @@
   ],
   "prompts": [
     {
-      "prompt": "/ce-work  for the plan that attach to Linear issue.\nBước đầu tiên là gửi một thông báo lên Linear là đã bắt đầu triển khai.\nGán url của pull/merge request vào Linear issue.\nKhi có code changes và đã tạo pull request, dùng git để kiểm tra xem có conflict với nhánh main. Nếu có thì phải resolve confict.\n"
+      "prompt": "/ce-work for the plan that attach to Linear issue.\nBước đầu tiên: gửi thông báo lên Linear là đã bắt đầu triển khai.\nTrước khi triển khai: kiểm tra trên Git provider và Linear xem PR plan đã merge chưa. Nếu chưa: stop, chuyển status → Todo, comment tiếng Việt nêu lý do (fallback khi nhảy status tay).\nNếu đã merge: chạy ce-work theo plan gắn issue.\nGán URL pull/merge request vào Linear issue.\nKhi có code changes + PR: kiểm tra/resolve conflict với main, rồi auto-merge PR vào main; tick Definition of Done trên plan.\nKhi xong: tự đổi status Linear → Compound (không dùng In Review). Comment Linear tiếng Việt: đã ship gì, link PR/MR, đã chuyển Compound.\nLàm theo LOOP.md / LOOP.mdc của repo.\n"
     }
   ],
   "model": "composer-2.5",

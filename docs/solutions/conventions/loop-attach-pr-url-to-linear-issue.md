@@ -25,11 +25,11 @@ Owners asking whether post-`ce-plan` comments must include the PR URL exposed am
 
 Treat PR/MR URL attachment as a **cross-step rule**, not an Implement-only step:
 
-1. **Universal rule in LOOP** — after the three automation bullets, state explicitly that any step creating a pull/merge request (`ce-plan`, `ce-work`, automation, or manual) **must** attach that URL to the related Linear issue **immediately when the PR is created**, not deferred to a summary comment or the In Review transition.
-2. **Generate plan step** — when status → `Plan` and a PR exists or is created during planning, attach URL PR/MR to Linear **before** conflict checks with `main` (`LOOP.md` automation bullet 1).
-3. **Implement step** — unchanged contract: attach URL and move to `In Review`; comment includes the link (`LOOP.md` **Quy trình vòng sau `ce-work`** step 2).
+1. **Universal rule in LOOP** — after the three automation bullets, state explicitly that any step creating a pull/merge request (`ce-plan`, `ce-work`, automation, or manual) **must** attach that URL to the related Linear issue **immediately when the PR is created**, not deferred to a summary comment or a later status transition.
+2. **Generate plan step** — when status → `Plan` and a PR exists or is created during planning, attach URL PR/MR to Linear **before** conflict checks / auto-merge with `main` (`LOOP.md` automation bullet 1). After merge, auto status → `In Progress`.
+3. **Implement step** — attach URL, auto-merge work PR, then move to `Compound` (not `In Review`); comment includes the link (`LOOP.md` **Quy trình vòng `ce-work`**).
 4. **Post-`ce-plan` comment** — still required for plan completion (path, summary, next step). It does **not** replace attaching the PR URL to the issue field/metadata when a PR was created; URL on the issue is the durable anchor, comment is the handoff narrative.
-5. **Sync surfaces** — portable rule in `LOOP.md` + `LOOP.mdc` (identical body); operator detail in `AUTOMATIONS.md`; automation prompt in `automations/generate-plan.json` when that step can create a PR.
+5. **Sync surfaces** — portable rule in `LOOP.md` + `LOOP.mdc` (identical body); operator detail in `AUTOMATIONS.md`; automation prompt samples in `automations/*.json` when that step can create a PR.
 
 **After (Generate plan automation bullet):**
 
@@ -52,7 +52,7 @@ Quy tắc chung — gắn URL PR/MR (bắt buộc): bất kỳ bước nào tạ
 ## When to Apply
 
 - Adding a new LOOP automation step that might commit or open a PR.
-- Auditing loop-distributed repos where agents create PRs but forget Linear attachment until In Review.
+- Auditing loop-distributed repos where agents create PRs but forget Linear attachment until a later status transition.
 - Clarifying owner questions about comment vs issue-field requirements after `ce-plan`.
 
 ## Examples
@@ -61,7 +61,7 @@ Quy tắc chung — gắn URL PR/MR (bắt buộc): bất kỳ bước nào tạ
 |-----------|----------------------------|---------------|
 | `ce-plan` only produces a plan (no PR opened) | No PR → no URL | Yes — plan path + next step |
 | `ce-plan` or Generate plan creates PR | **Yes — immediately** | Yes — plan done; mention PR if relevant |
-| `ce-work` / Implement completes | **Yes — before In Review** | Yes — ship summary + link |
+| `ce-work` / Implement completes | **Yes — before Compound** | Yes — ship summary + link |
 | `ce-compound` / Compound creates doc/code changes | **Yes — immediately** | Yes — compound summary |
 
 ## Related

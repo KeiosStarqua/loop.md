@@ -16,4 +16,7 @@ The install toolchain that copies a rendered `LOOP.mdc` into a target repo's `.c
 ## Automation
 
 ### Cursor Automations
-The three Linear status-triggered automation steps defined in LOOP: **Generate plan** (`Plan` → `ce-plan`), **Implement** (`In Progress` → `ce-work`), and **Compound** (`Compound` → `ce-compound`). Owner visibility during these steps is Linear-only. Any step that creates a pull or merge request must attach that URL to the related Linear issue immediately — not only during Implement.
+The three Linear status-triggered automation steps defined in LOOP: **Generate plan** (`Plan` → `ce-plan` → auto-merge plan PR → auto **In Progress**), **Implement** (`In Progress` → `ce-work` → auto-merge work PR → auto **Compound**), and **Compound** (`Compound` → `ce-compound` → auto-merge if any → auto **Done**). Happy path does not stop at **In Review** and does not wait for the owner to click status by hand. Owner visibility during these steps is Linear-only. Any step that creates a pull or merge request must attach that URL to the related Linear issue immediately.
+
+### Serial Plan
+An outside routine or agent that moves Linear issues to **Plan** one at a time: start one issue → Plan, wait until that issue reaches **Done**, then move the next issue to Plan. Do not send many issues to Plan at once.

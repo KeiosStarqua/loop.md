@@ -27,11 +27,13 @@ To streamline the workflow and eliminate unnecessary manual intervention, any pu
    - When `ce-plan` creates a PR/MR (or commits to a branch), the agent must verify no conflicts with `main` (resolving conflicts if any exist).
    - Auto-merge the pull/merge request into `main`.
    - Attach the PR/MR URL to the Linear issue.
-2. **Post-`ce-plan` Notification:**
-   - Include the plan path, Linear issue link, and plan PR merge status in the mandatory Linear comment to the owner.
+2. **Post-`ce-plan` Status and Notification:**
+   - After the plan PR is merged (or if there is no PR to merge), auto-change Linear status → `In Progress` so Implement runs.
+   - Include the plan path, Linear issue link, plan PR merge status, and status transition in the mandatory Linear comment.
 3. **Sync surfaces:**
    - Update both `LOOP.md` and `LOOP.mdc` synchronously.
    - Update `AUTOMATIONS.md` for operator-level details.
+   - Sync `automations/generate-plan.json` prompt sample when the contract changes.
 
 ## Why This Matters
 
