@@ -13,6 +13,7 @@ Replace this placeholder with a concise description of what this project does, w
 - Thông báo hoàn thành agent chỉ qua Linear comment (save_comment) — bỏ gửi message Slack khỏi LOOP.md/LOOP.mdc [LOOP.md]
 - Linear automation triggers: Todo → Plan, Done → Compound. In Progress / In Review unchanged. Đóng vòng sau review chuyển sang Compound (không còn Done) để kích hoạt ce-compound. [LOOP.md]
 - After ce-compound auto-merges its PR (or finishes with no changes), Linear issue status must move to Done — Compound is no longer a terminal status. [LOOP.md:29]
+- Sau ce-plan (gắn plan↔Linear + auto-merge PR plan nếu có + comment), tự chuyển Linear sang In Progress để kích hoạt Implement. Đổi status sau merge để Implement không stop về Todo.
 
 ## Notes
 - docs: add curl one-liners for sync-loop-remote.sh

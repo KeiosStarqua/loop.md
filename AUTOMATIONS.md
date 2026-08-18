@@ -13,8 +13,7 @@ Ba automation tách **lập kế hoạch**, **triển khai** và **đúc kết (
 ```text
 Linear status → Plan
     ↓  Automation: Generate plan  (model: cursor-grok-4.5-high)
-ce-plan → plan dưới docs/plans/ + auto-merge PR của plan (không đổi status Linear)
-    ↓  owner chuyển status → In Progress
+ce-plan → plan dưới docs/plans/ + auto-merge PR của plan + status → In Progress
     ↓  Automation: Implement  (model: composer-2.5)
 kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + auto-merge PR của ce-work + gắn URL Linear → status In Review
     ↓  review xong → agent/owner chuyển status → Compound
@@ -42,8 +41,8 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 1. Báo Linear + Slack: đã bắt đầu tạo plan.
 2. Kiểm tra plan đã tồn tại chưa (tránh tạo trùng).
 3. Chạy `/ce-plan` (skill `ce-plan`) cho issue Linear.
-4. **Không** đổi status Linear khi xong.
-5. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
+4. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
+5. **Sau khi** plan đã gắn Linear và PR của plan đã merge (nếu có): đổi status Linear → **In Progress** (kích hoạt Implement).
 
 ---
 
@@ -88,13 +87,12 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 
 ## Cách dùng (owner)
 
-1. Issue vào **Plan** → chờ Generate plan xong (status giữ Plan).
-2. Duyệt plan trên Linear / `docs/plans/`.
-3. Chuyển **In Progress** → Implement chạy; khi xong issue vào **In Review**.
-4. Review PR/MR → merge / Compound theo quy trình đóng vòng trong `LOOP.md`.
-5. Issue vào **Compound** → Compound tự chạy `ce-compound` để đúc kết learning; khi xong (PR đã merge hoặc không có thay đổi) issue vào **Done**.
+1. Issue vào **Plan** → Generate plan chạy; khi xong (plan gắn Linear, PR plan đã merge nếu có) issue vào **In Progress**.
+2. Implement tự chạy khi status → **In Progress**; khi xong issue vào **In Review**.
+3. Review PR/MR → merge / Compound theo quy trình đóng vòng trong `LOOP.md`.
+4. Issue vào **Compound** → Compound tự chạy `ce-compound` để đúc kết learning; khi xong (PR đã merge hoặc không có thay đổi) issue vào **Done**.
 
-Không nhảy thẳng Plan → In Progress nếu chưa có plan (Implement cần plan gắn issue).
+Không nhảy thẳng Plan → In Progress nếu chưa có plan / PR plan chưa merge (Implement cần plan đã merge; thiếu thì stop về `Todo`).
 
 ---
 

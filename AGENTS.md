@@ -87,6 +87,7 @@ When the user requests a durable behavior change, record it here or in the relev
 
 - Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
 - Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`.
+- Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu có), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
 - Cho phép tự động merge pull/merge request sau bước `ce-work`.
 - Cho phép tự động merge pull/merge request sau bước `ce-compound`.
 - Sau bước `ce-compound` và sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi), tự chuyển status Linear sang `Done`.
