@@ -1,6 +1,7 @@
 ---
 title: "Auto Merge Pull Request After ce-compound Step"
 date: 2026-08-18
+last_updated: 2026-08-18
 category: conventions
 module: loop-template
 problem_type: convention
@@ -27,7 +28,7 @@ In the loop workflow, after completing a task loop and transitioning an issue to
    - Attach the PR/MR URL to the Linear issue immediately.
 2. **Post-`ce-compound` State:**
    - Clean up branches created during `ce-work` if merged.
-   - Do not change Linear issue status when done (the issue remains in `Compound`).
+   - After the ce-compound PR is merged (or immediately if there were no changes), set Linear issue status to `Done`.
 3. **Sync surfaces:**
    - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
    - Update `AUTOMATIONS.md` for operator-level details.

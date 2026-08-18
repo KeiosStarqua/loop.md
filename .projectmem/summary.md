@@ -1,6 +1,6 @@
 # projectmem - my-loop-config
 
-_Last updated: 2026-08-12_
+_Last updated: 2026-08-18_
 
 ## Project purpose
 Replace this placeholder with a concise description of what this project does, who it serves, and the main technologies or runtime assumptions.
@@ -12,9 +12,9 @@ Replace this placeholder with a concise description of what this project does, w
 - Không đề cập AUTOMATIONS.md trong LOOP.md / LOOP.mdc — các file này được copy vào từng repo và LOOP.mdc thành Cursor rule; chi tiết automation chỉ giữ ở AUTOMATIONS.md trong repo config.
 - Thông báo hoàn thành agent chỉ qua Linear comment (save_comment) — bỏ gửi message Slack khỏi LOOP.md/LOOP.mdc [LOOP.md]
 - Linear automation triggers: Todo → Plan, Done → Compound. In Progress / In Review unchanged. Đóng vòng sau review chuyển sang Compound (không còn Done) để kích hoạt ce-compound. [LOOP.md]
+- After ce-compound auto-merges its PR (or finishes with no changes), Linear issue status must move to Done — Compound is no longer a terminal status. [LOOP.md:29]
 
 ## Notes
-- feat: add remote sync-loop runner from GitHub raw URL
 - docs: add curl one-liners for sync-loop-remote.sh
 - docs: explain why sync-loop must use sync-loop-remote wrapper
 - docs: generalize loop templates and remove KT System references
@@ -24,6 +24,7 @@ Replace this placeholder with a concise description of what this project does, w
 - LOOP.md và LOOP.mdc phải đồng bộ nội dung; không cross-ref file chỉ tồn tại trong my-loop-config (như AUTOMATIONS.md).
 - LOOP Generate plan: báo bắt đầu chỉ trên Linear (không còn Linear + Slack) [LOOP.md]
 - New feature: feat(automations): attach PR URL in generate-plan automation prompt [automations/generate-plan.json]
+- LOOP Compound now ends at Linear Done after ce-compound PR merge (or immediately if no changes). automations/*.json prompts left unchanged per standing rule — LOOP.md/LOOP.mdc are the source of truth. [LOOP.md:29]
 
 ## Key files
 - `README.md`

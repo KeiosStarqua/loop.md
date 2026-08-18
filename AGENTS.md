@@ -89,6 +89,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`.
 - Cho phép tự động merge pull/merge request sau bước `ce-work`.
 - Cho phép tự động merge pull/merge request sau bước `ce-compound`.
+- Sau bước `ce-compound` và sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi), tự chuyển status Linear sang `Done`.
 
 ## Child DOX Index
 

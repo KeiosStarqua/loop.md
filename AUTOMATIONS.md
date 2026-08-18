@@ -19,7 +19,7 @@ ce-plan → plan dưới docs/plans/ + auto-merge PR của plan (không đổi s
 kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + auto-merge PR của ce-work + gắn URL Linear → status In Review
     ↓  review xong → agent/owner chuyển status → Compound
     ↓  Automation: Compound  (model: cursor-grok-4.5-high)
-ce-compound → ghi learning/DOX → PR/MR + auto-merge PR của ce-compound + gắn URL Linear (nếu có thay đổi) (không đổi status Linear)
+ce-compound → ghi learning/DOX → PR/MR + auto-merge PR của ce-compound + gắn URL Linear (nếu có thay đổi) → status Done
 ```
 
 Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
@@ -82,7 +82,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 
 1. Chạy `/ce-compound` (skill `ce-compound`) để ghi lại learning vừa xong dưới dạng durable — xem `ce-compound/SKILL.md`.
 2. Nếu có thay đổi (code changes / docs), bắt buộc tạo pull request / merge request, gán URL PR/MR vào issue Linear, dùng git kiểm tra conflict với `main` (nếu có thì resolve), và tự động merge (auto-merge) PR vào nhánh `main`.
-3. Không đổi status Linear khi xong (issue đã ở **Compound**).
+3. Sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi) đổi status Linear → **Done**.
 
 ---
 
@@ -92,7 +92,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 2. Duyệt plan trên Linear / `docs/plans/`.
 3. Chuyển **In Progress** → Implement chạy; khi xong issue vào **In Review**.
 4. Review PR/MR → merge / Compound theo quy trình đóng vòng trong `LOOP.md`.
-5. Issue vào **Compound** → Compound tự chạy `ce-compound` để đúc kết learning.
+5. Issue vào **Compound** → Compound tự chạy `ce-compound` để đúc kết learning; khi xong (PR đã merge hoặc không có thay đổi) issue vào **Done**.
 
 Không nhảy thẳng Plan → In Progress nếu chưa có plan (Implement cần plan gắn issue).
 
