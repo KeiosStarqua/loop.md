@@ -88,6 +88,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
 - Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`.
 - Cho phép tự động merge pull/merge request sau bước `ce-work`.
+- Cho phép tự động merge pull/merge request sau bước `ce-compound`.
 
 ## Child DOX Index
 
