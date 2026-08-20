@@ -1,6 +1,6 @@
 # projectmem - my-loop-config
 
-_Last updated: 2026-08-18_
+_Last updated: 2026-08-19_
 
 ## Project purpose
 Replace this placeholder with a concise description of what this project does, who it serves, and the main technologies or runtime assumptions.
@@ -16,7 +16,6 @@ Replace this placeholder with a concise description of what this project does, w
 - Sau ce-plan (gắn plan↔Linear + auto-merge PR plan nếu có + comment), tự chuyển Linear sang In Progress để kích hoạt Implement. Đổi status sau merge để Implement không stop về Todo.
 
 ## Notes
-- docs: add curl one-liners for sync-loop-remote.sh
 - docs: explain why sync-loop must use sync-loop-remote wrapper
 - docs: generalize loop templates and remove KT System references
 - feat: add --setup one-shot mode to sync-loop.sh
@@ -26,6 +25,7 @@ Replace this placeholder with a concise description of what this project does, w
 - LOOP Generate plan: báo bắt đầu chỉ trên Linear (không còn Linear + Slack) [LOOP.md]
 - New feature: feat(automations): attach PR URL in generate-plan automation prompt [automations/generate-plan.json]
 - LOOP Compound now ends at Linear Done after ce-compound PR merge (or immediately if no changes). automations/*.json prompts left unchanged per standing rule — LOOP.md/LOOP.mdc are the source of truth. [LOOP.md:29]
+- KEI-263 Implement (ce-work) dừng vì cổng duyệt U1 trên Linear — owner phải comment khẳng định agency 1|2 = Cá nhân/Môi giới; Oke/Huhu không đủ. Không phải stop vì PR plan chưa merge (#157 đã merge). Status In Progress → Todo. [LOOP.md:ce-work U1 gate]
 
 ## Key files
 - `README.md`
