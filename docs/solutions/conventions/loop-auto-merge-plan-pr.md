@@ -26,6 +26,7 @@ To streamline the workflow and eliminate unnecessary manual intervention, any pu
 1. **Auto-merge plan PR in `ce-plan` / Generate plan flow:**
    - When `ce-plan` creates a PR/MR (or commits to a branch), the agent must verify no conflicts with `main` (resolving conflicts if any exist).
    - Auto-merge the pull/merge request into `main`.
+   - Delete the PR head branch on the remote (see [Delete Remote Branch After PR Merge](./loop-delete-branch-after-pr-merge.md)).
    - Attach the PR/MR URL to the Linear issue.
 2. **Post-`ce-plan` Notification:**
    - Include the plan path, Linear issue link, and plan PR merge status in the mandatory Linear comment to the owner.

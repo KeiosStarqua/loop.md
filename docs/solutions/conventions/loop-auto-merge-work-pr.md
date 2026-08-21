@@ -24,6 +24,7 @@ In the loop workflow, after completing implementation (`ce-work`), code changes 
 1. **Auto-merge work PR in `ce-work` / Implement flow:**
    - When `ce-work` creates a PR/MR (or commits on a branch), the agent must verify no conflicts with `main` (resolving conflicts if any exist).
    - Auto-merge the pull/merge request into `main`.
+   - Delete the PR head branch on the remote (see [Delete Remote Branch After PR Merge](./loop-delete-branch-after-pr-merge.md)).
    - Attach the PR/MR URL to the Linear issue immediately.
 2. **Post-`ce-work` Status and Notification:**
    - Update the Linear issue status to `In Review`.

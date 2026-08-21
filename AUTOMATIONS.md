@@ -13,12 +13,12 @@ Ba automation tách **lập kế hoạch**, **triển khai** và **đúc kết (
 ```text
 Linear status → Plan
     ↓  Automation: Generate plan  (model: cursor-grok-4.5-high)
-ce-plan → plan dưới docs/plans/ + auto-merge PR của plan + status → In Progress
+ce-plan → plan dưới docs/plans/ + auto-merge PR của plan + xóa nhánh PR plan + status → In Progress
     ↓  Automation: Implement  (model: composer-2.5)
-kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + auto-merge PR của ce-work + gắn URL Linear → status In Review
+kiểm tra PR plan đã merge trên Git provider & Linear (chưa → stop & Todo; rồi → ce-work) → PR/MR + auto-merge PR của ce-work + xóa nhánh PR ce-work + gắn URL Linear → status In Review
     ↓  review xong → agent/owner chuyển status → Compound
     ↓  Automation: Compound  (model: cursor-grok-4.5-high)
-ce-compound → ghi learning/DOX → PR/MR + auto-merge PR của ce-compound + gắn URL Linear (nếu có thay đổi) → status Done
+ce-compound → ghi learning/DOX → PR/MR + auto-merge PR của ce-compound + xóa nhánh PR ce-compound + gắn URL Linear (nếu có thay đổi) + dọn nhánh PR đã merge còn sót → status Done
 ```
 
 Slack channel gắn project: điền ID channel của project đích (dùng khi agent báo Slack).
@@ -41,7 +41,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 1. Báo Linear + Slack: đã bắt đầu tạo plan.
 2. Kiểm tra plan đã tồn tại chưa (tránh tạo trùng).
 3. Chạy `/ce-plan` (skill `ce-plan`) cho issue Linear.
-4. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
+4. Nếu đã có code changes + PR/MR: gán URL PR/MR vào issue Linear; `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`; **xóa nhánh head của PR plan trên remote** (`gh pr merge --delete-branch` hoặc tương đương GitLab).
 5. **Sau khi** plan đã gắn Linear và PR của plan đã merge (nếu có): đổi status Linear → **In Progress** (kích hoạt Implement).
 
 ---
@@ -63,7 +63,7 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
    - Nếu đã merge: tiếp tục bước 3.
 3. Chạy `/ce-work` theo plan gắn issue Linear.
 4. Gán URL pull/merge request vào issue Linear.
-5. Nếu đã có code changes + PR/MR: `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`.
+5. Nếu đã có code changes + PR/MR: `git` kiểm tra conflict với `main`; có thì resolve; tự động merge (auto-merge) PR vào nhánh `main`; **xóa nhánh head của PR ce-work trên remote**.
 6. Đổi status Linear → **In Review** khi xong.
 
 ---
@@ -80,8 +80,9 @@ Slack channel gắn project: điền ID channel của project đích (dùng khi 
 **Agent làm gì**
 
 1. Chạy `/ce-compound` (skill `ce-compound`) để ghi lại learning vừa xong dưới dạng durable — xem `ce-compound/SKILL.md`.
-2. Nếu có thay đổi (code changes / docs), bắt buộc tạo pull request / merge request, gán URL PR/MR vào issue Linear, dùng git kiểm tra conflict với `main` (nếu có thì resolve), và tự động merge (auto-merge) PR vào nhánh `main`.
-3. Sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi) đổi status Linear → **Done**.
+2. Nếu có thay đổi (code changes / docs), bắt buộc tạo pull request / merge request, gán URL PR/MR vào issue Linear, dùng git kiểm tra conflict với `main` (nếu có thì resolve), và tự động merge (auto-merge) PR vào nhánh `main`; **xóa nhánh head của PR ce-compound trên remote**.
+3. **Dọn nhánh:** xóa mọi nhánh head PR plan / ce-work / ce-compound đã merge còn sót trên remote.
+4. Sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi) đổi status Linear → **Done**.
 
 ---
 

@@ -90,6 +90,7 @@ When the user requests a durable behavior change, record it here or in the relev
 - Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu có), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
 - Cho phép tự động merge pull/merge request sau bước `ce-work`.
 - Cho phép tự động merge pull/merge request sau bước `ce-compound`.
+- Sau mỗi lần auto-merge PR (plan / ce-work / ce-compound), **bắt buộc xóa nhánh head của PR đó trên remote** — xem **Quy tắc chung — xóa nhánh sau merge PR** trong `LOOP.md` / `LOOP.mdc`.
 - Sau bước `ce-compound` và sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi), tự chuyển status Linear sang `Done`.
 
 ## Child DOX Index

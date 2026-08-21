@@ -25,9 +25,10 @@ In the loop workflow, after completing a task loop and transitioning an issue to
 1. **Auto-merge compound PR in `ce-compound` / Compound flow:**
    - When `ce-compound` creates a PR/MR for doc/learning changes, the agent must verify no conflicts with `main` (resolving conflicts if any exist).
    - Auto-merge the pull/merge request into `main`.
+   - Delete the PR head branch on the remote (see [Delete Remote Branch After PR Merge](./loop-delete-branch-after-pr-merge.md)).
    - Attach the PR/MR URL to the Linear issue immediately.
 2. **Post-`ce-compound` State:**
-   - Clean up branches created during `ce-work` if merged.
+   - Sweep and delete any remaining merged plan / ce-work / ce-compound PR head branches on remote.
    - After the ce-compound PR is merged (or immediately if there were no changes), set Linear issue status to `Done`.
 3. **Sync surfaces:**
    - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
