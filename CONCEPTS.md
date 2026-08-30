@@ -11,7 +11,7 @@ The portable Loop Engineering specification (`LOOP.md` / `LOOP.mdc`) that define
 Per-target-repository configuration holding the five Linear metadata values (owner, workspace, project name, URL, id) that replace `REPLACE_LINEAR_*` placeholders during sync. Created from the example template on first sync; never overwritten without an explicit force path.
 
 ### sync-loop
-The install toolchain that copies a rendered `LOOP.mdc` into a target repo's `.cursor/rules/` using values from that repo's `loop.env`. Remote installs use a wrapper that stages the script beside its template siblings before execution.
+The install toolchain that copies a rendered `LOOP.mdc` into a target repo's `.cursor/rules/` using values from that repo's `loop.env`. Implemented as `scripts/sync-loop.sh` (bash) and `scripts/sync-loop.ps1` (PowerShell). Remote installs use a wrapper (`sync-loop-remote.sh` / `sync-loop-remote.ps1`) that stages the script beside its template siblings before execution.
 
 ## Automation
 

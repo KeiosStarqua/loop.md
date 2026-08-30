@@ -36,16 +36,29 @@ curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/mai
 # hoặc: ... | bash -s -- /path/to/repo
 ```
 
+**PowerShell (Windows / `pwsh`):**
+
+```powershell
+irm https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.ps1 | iex
+# hoặc chỉ định repo (dùng -TargetRepo — tránh path kiểu /tmp/... vì PowerShell coi là switch):
+$u = 'https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.ps1'
+& ([ScriptBlock]::Create((irm $u))) @('-TargetRepo', 'C:\path\to\repo')
+```
+
 - Chưa có `.cursor/loop.env` → **tự tạo** từ `loop.env.example` (giá trị mặc định `your-*`) rồi sync luôn, **không lỗi**.
 - Đã có `.cursor/loop.env` → dùng luôn giá trị đó để sync (chạy lại bao nhiêu lần cũng an toàn).
 - Nếu giá trị mặc định (`your-display-name`, `your-workspace`...) không đúng cho repo này: mở `.cursor/loop.env` sửa 5 biến Linear cho đúng, rồi chạy lại đúng lệnh trên — không cần bước riêng nào khác.
 
-`bash -s --` dùng khi cần truyền thêm đường dẫn repo. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ.
+`bash -s --` dùng khi cần truyền thêm đường dẫn repo. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ. Trên PowerShell: dùng `sync-loop-remote.ps1` (không pipe thẳng `sync-loop.ps1` — cùng lý do).
 
 ### Clone local
 
 ```bash
 ./scripts/sync-loop.sh /path/to/repo
+```
+
+```powershell
+./scripts/sync-loop.ps1 -TargetRepo C:\path\to\repo
 ```
 
 Kết quả: `.cursor/rules/LOOP.mdc` với giá trị Linear của repo (không còn placeholder REPLACE_*, có thể là giá trị mặc định nếu chưa sửa `loop.env`).
@@ -54,8 +67,8 @@ Kết quả: `.cursor/rules/LOOP.mdc` với giá trị Linear của repo (không
 
 | Flag | Khi nào dùng |
 |------|--------------|
-| `--init` | Chỉ tạo `.cursor/loop.env` từ mẫu, **không** sync ngay — dùng khi muốn sửa giá trị trước |
-| `--setup --owner ... --workspace ... --project-name ... --project-url ... --project-id ...` | Tạo `loop.env` với giá trị Linear thật ngay từ đầu (bỏ qua bước sửa tay), rồi sync. Idempotent nếu `loop.env` đã có; thêm `--force` để ghi đè |
+| `--init` / `-Init` | Chỉ tạo `.cursor/loop.env` từ mẫu, **không** sync ngay — dùng khi muốn sửa giá trị trước |
+| `--setup --owner ...` / `-Setup -Owner ...` | Tạo `loop.env` với giá trị Linear thật ngay từ đầu (bỏ qua bước sửa tay), rồi sync. Idempotent nếu `loop.env` đã có; thêm `--force` / `-Force` để ghi đè |
 
 ## Prompt cho agent (sync từng repo)
 
@@ -64,14 +77,20 @@ Copy prompt dưới đây khi nhờ agent cài hoặc cập nhật `LOOP.mdc` sa
 ```text
 Dùng sync-loop để cài/cập nhật LOOP.mdc cho từng repo đích. Không copy tay LOOP.mdc.
 
-Luôn lấy runner mới nhất qua curl (khuyến nghị — không cần clone):
+Luôn lấy runner mới nhất qua curl hoặc irm (khuyến nghị — không cần clone):
 
   curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- [--init|--setup ...] [<repo>]
 
-  sync-loop-remote.sh tự tải sync-loop.sh + LOOP.mdc + loop.env.example cùng revision.
-  Không pipe sync-loop.sh trực tiếp (thiếu template).
+  # PowerShell:
+  irm https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.ps1 | iex
+  # hoặc có tham số:
+  $u = 'https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.ps1'
+  & ([ScriptBlock]::Create((irm $u))) @('-Setup', '-Owner', '<owner>', '-Workspace', '<workspace>', '-ProjectName', '<project name>', '-ProjectUrl', '<project url>', '-ProjectId', '<project id>', '-TargetRepo', '<repo>')
 
-  Nếu đã clone my-loop-config: chạy scripts/sync-loop-remote.sh hoặc ./scripts/sync-loop.sh.
+  sync-loop-remote.{sh,ps1} tự tải sync-loop.{sh,ps1} + LOOP.mdc + loop.env.example cùng revision.
+  Không pipe sync-loop.{sh,ps1} trực tiếp (thiếu template).
+
+  Nếu đã clone my-loop-config: chạy scripts/sync-loop-remote.{sh,ps1} hoặc ./scripts/sync-loop.{sh,ps1}.
 
 Cho mỗi repo đích, lần lượt:
 
@@ -86,6 +105,11 @@ Cho mỗi repo đích, lần lượt:
      curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.sh | bash -s -- --setup \
        --owner "<owner>" --workspace "<workspace>" --project-name "<project name>" \
        --project-url "<project url>" --project-id "<project id>" <repo>
+
+   PowerShell tương đương:
+
+     $u = 'https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scripts/sync-loop-remote.ps1'
+     & ([ScriptBlock]::Create((irm $u))) @('-Setup', '-Owner', '<owner>', '-Workspace', '<workspace>', '-ProjectName', '<project name>', '-ProjectUrl', '<project url>', '-ProjectId', '<project id>', '-TargetRepo', '<repo>')
 
    - Kết quả bắt buộc: <repo>/.cursor/rules/LOOP.mdc, không còn placeholder REPLACE_LINEAR_*
    - Giá trị trong file phải khớp .cursor/loop.env của repo đó
