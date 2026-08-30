@@ -1,4 +1,6 @@
 # Copy LOOP.mdc template into a target repo and replace REPLACE_* from .cursor/loop.env
+# Keep this file ASCII. Windows PowerShell 5.1 parses BOM-less .ps1 as the system
+# ANSI code page; a UTF-8 em dash becomes U+201D and closes double-quoted strings.
 #Requires -Version 5.1
 [CmdletBinding()]
 param(
@@ -45,7 +47,7 @@ Usage:
             are wrong for this repo.
 
   -Init        only create TARGET/.cursor/loop.env from loop.env.example (no overwrite,
-               no sync) — use when you want to edit before syncing
+               no sync) - use when you want to edit before syncing
 
   -Setup       all three steps in one command: create loop.env from five Linear flags
                (if missing, or overwrite with -Force) then sync immediately.
@@ -137,7 +139,7 @@ function Invoke-Init {
         return
     }
     Copy-Item -LiteralPath $ExampleEnv -Destination $dest
-    Write-Host "created: $dest — fill in this repo's Linear values"
+    Write-Host "created: $dest - fill in this repo's Linear values"
 }
 
 function Invoke-Setup {
@@ -168,7 +170,7 @@ function Invoke-Setup {
         }
 
         $lines = @(
-            '# Linear values for this repo — created by sync-loop.ps1 -Setup'
+            '# Linear values for this repo - created by sync-loop.ps1 -Setup'
         )
         foreach ($key in $Placeholders) {
             $lines += "$key=$($SetupValues[$key])"
@@ -197,7 +199,7 @@ function Invoke-Sync {
 
     if (-not (Test-Path -LiteralPath $envFile)) {
         Invoke-Init -Target $Target
-        Write-Host "  (using default Linear values from loop.env.example — edit $envFile and re-run if wrong for this repo)"
+        Write-Host "  (using default Linear values from loop.env.example - edit $envFile and re-run if wrong for this repo)"
     }
 
     $vars = Read-EnvFile -EnvFile $envFile

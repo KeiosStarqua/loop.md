@@ -55,10 +55,28 @@ function Get-RemoteFile {
     }
 }
 
+# Windows PowerShell 5.1 parses BOM-less .ps1 as the system ANSI code page.
+function Add-Utf8Bom {
+    param([string]$Path)
+
+    $bytes = [System.IO.File]::ReadAllBytes($Path)
+    $hasBom = ($bytes.Length -ge 3) -and ($bytes[0] -eq 0xEF) -and ($bytes[1] -eq 0xBB) -and ($bytes[2] -eq 0xBF)
+    if (-not $hasBom) {
+        $withBom = New-Object byte[] ($bytes.Length + 3)
+        $withBom[0] = 0xEF
+        $withBom[1] = 0xBB
+        $withBom[2] = 0xBF
+        [System.Buffer]::BlockCopy($bytes, 0, $withBom, 3, $bytes.Length)
+        [System.IO.File]::WriteAllBytes($Path, $withBom)
+    }
+}
+
 $scriptsDir = Join-Path $Cache 'scripts'
 New-Item -ItemType Directory -Path $scriptsDir -Force | Out-Null
 
-Get-RemoteFile -Url $SyncLoopScriptUrl -Destination (Join-Path $scriptsDir 'sync-loop.ps1')
+$cachedScript = Join-Path $scriptsDir 'sync-loop.ps1'
+Get-RemoteFile -Url $SyncLoopScriptUrl -Destination $cachedScript
+Add-Utf8Bom -Path $cachedScript
 Get-RemoteFile -Url "$LoopConfigRawBase/LOOP.mdc" -Destination (Join-Path $Cache 'LOOP.mdc')
 Get-RemoteFile -Url "$LoopConfigRawBase/loop.env.example" -Destination (Join-Path $Cache 'loop.env.example')
 
