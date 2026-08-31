@@ -7,6 +7,17 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
          → Review → Học → Đóng vòng → Lặp lại hoặc Dừng
 ```
 
+### Cấu hình repo (`.cursor/loop.env`)
+
+Giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** điều khiển auto-merge pull/merge request trong vòng (`ce-plan`, `ce-work`, `ce-compound`):
+
+| Giá trị | Hành vi |
+|---------|---------|
+| `true` (mặc định) | Sau khi tạo PR/MR và xác nhận không conflict với `main`, agent **bắt buộc auto-merge** vào `main`, rồi xóa nhánh head. |
+| `false` | Agent **chỉ tạo** PR/MR và gắn URL vào Linear; **không** auto-merge — chờ owner/reviewer merge tay. Các bước phụ thuộc PR merged (ví dụ Implement kiểm tra plan) vẫn áp dụng. |
+
+Mọi chỗ nói auto-merge trong tài liệu này tuân giá trị ở **Cấu hình repo** — xem **Quy tắc chung — auto-merge PR**.
+
 Ánh xạ trên repo này:
 
 ```text
@@ -29,14 +40,19 @@ Lặp issue Linear tiếp theo
 
 **Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ bước nào tạo pull/merge request (dù là `ce-plan`, `ce-work`, automation, hay chạy tay) đều **phải** gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo — không chờ tới bước tổng kết mới gắn.
 
-**Quy tắc chung — xóa nhánh sau merge PR (bắt buộc):** ngay **sau khi** pull/merge request đã merge vào nhánh chính (`main`), agent **phải xóa nhánh head của PR đó trên remote** — không để nhánh feature tồn đọng sau merge.
+**Quy tắc chung — auto-merge PR (theo cấu hình):** đọc giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** từ `.cursor/loop.env` (mặc định `true` nếu thiếu).
+
+- **Khi `true`:** sau khi tạo PR/MR và kiểm tra/resolve conflict với `main`, agent **bắt buộc auto-merge** vào `main`, rồi xóa nhánh head (xem **Quy tắc chung — xóa nhánh sau merge PR**). Áp dụng cho PR của `ce-plan`, `ce-work`, `ce-compound` và automation tương ứng.
+- **Khi `false`:** agent **không** auto-merge; chỉ gắn URL PR/MR vào Linear và comment trạng thái chờ review. Owner merge tay trước khi các bước phụ thuộc merged PR có thể tiếp tục. **Không** xóa nhánh head cho đến khi PR đã merge.
+
+**Quy tắc chung — xóa nhánh sau merge PR (bắt buộc):** ngay **sau khi** pull/merge request đã merge vào nhánh chính (`main`), agent **phải xóa nhánh head của PR đó trên remote** — không để nhánh feature tồn đọng sau merge. Chỉ áp dụng khi PR đã merge (tự merge hoặc owner merge tay).
 
 - **GitHub:** ưu tiên merge kèm xóa nhánh: `gh pr merge <n> --merge --delete-branch` (hoặc `--squash` / `--rebase` theo convention repo). Nếu PR đã merge sẵn: `git push origin --delete <head-branch>` hoặc `gh api -X DELETE repos/{owner}/{repo}/git/refs/heads/{head-branch}`.
 - **GitLab:** merge MR với **Remove source branch** bật, hoặc API tương đương sau merge.
 - **An toàn:** chỉ xóa nhánh head của PR vừa merge do agent/automation tạo hoặc push được; **không** xóa nhánh default (`main` / `master`); **không** xóa nhánh của người khác hay PR chưa merge.
 - **Thứ tự:** merge PR → xóa nhánh head → bước tiếp theo (comment Linear, đổi status, v.v.).
 
-**Sau khi `ce-plan` xong** (manual hoặc automation), nếu có PR tạo bởi bước lập kế hoạch thì agent **phải auto-merge PR của plan vào `main`**, comment Linear theo **Thông báo hoàn thành của agent**, rồi **đổi status → `In Progress`** — xem **Quy trình vòng sau `ce-plan`**. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
+**Sau khi `ce-plan` xong** (manual hoặc automation), nếu có PR tạo bởi bước lập kế hoạch thì khi auto-merge bật (xem **Cấu hình repo**) agent **phải auto-merge PR của plan vào `main`**, comment Linear theo **Thông báo hoàn thành của agent**, rồi **đổi status → `In Progress`** — xem **Quy trình vòng sau `ce-plan`**. Khi auto-merge tắt, chỉ gắn URL PR và comment chờ owner merge trước khi chuyển `In Progress`. Ưu tiên bám plan do automation tạo; không mở đường lập kế hoạch song song.
 
 Một đặc tả vòng nên có ít nhất: Trigger, Goal, Available context, Permitted actions, Verification, Failure handling, Memory update, Stopping conditions.
 
@@ -63,7 +79,7 @@ Không chỉ nhắc trong Cursor chat. Nếu chưa có Linear issue phù hợp, 
 Khi skill **`ce-plan`** (hoặc Cursor Automation chạy `ce-plan` sau status → `Plan`) **đã tạo/cập nhật plan** dưới `docs/plans/`, agent **không** dừng ở Cursor chat. Báo cáo lập kế hoạch và auto-merge PR plan là một phần của “xong plan”:
 
 1. **Plan ↔ Linear** — đảm bảo đường dẫn plan đã ghi vào mô tả issue Linear và frontmatter/section plan có `linear_issues:` (xem **Plan ↔ Linear** bên dưới).
-2. **Auto-merge PR của plan** — nếu bước `ce-plan` tạo PR/MR chứa file plan (hoặc commit trên branch riêng), agent **bắt buộc tự động merge (auto-merge)** pull/merge request đó vào nhánh chính (`main`) sau khi kiểm tra không có conflict, gắn URL PR/MR vào Linear, rồi **xóa nhánh head của PR plan trên remote** (xem **Quy tắc chung — xóa nhánh sau merge PR**).
+2. **Auto-merge PR của plan** — nếu bước `ce-plan` tạo PR/MR chứa file plan (hoặc commit trên branch riêng) và auto-merge bật (xem **Cấu hình repo**), agent **bắt buộc tự động merge (auto-merge)** pull/merge request đó vào nhánh chính (`main`) sau khi kiểm tra không có conflict, gắn URL PR/MR vào Linear, rồi **xóa nhánh head của PR plan trên remote** (xem **Quy tắc chung — xóa nhánh sau merge PR**). Khi auto-merge tắt, chỉ gắn URL PR/MR và comment chờ owner merge.
 3. **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear): plan nào vừa tạo/cập nhật (path), issue Linear liên quan, trạng thái merge PR của plan, tóm tắt hướng triển khai / bước tiếp (status → `In Progress` → Implement / `ce-work`).
 4. **Status → In Progress** — sau khi đã gắn plan↔Linear, auto-merge PR của plan (nếu có), và comment Linear: `save_issue` → **`In Progress`**. Đổi status **sau** merge để Implement không bị stop về `Todo`. Status → `In Progress` kích hoạt automation **Implement** (`ce-work`).
 
@@ -78,7 +94,7 @@ Không chỉ nhắc trong Cursor chat. Áp dụng cả khi `ce-plan` chạy th�
 
 2. **Khi đã kiểm chứng và hoàn tất phạm vi plan:**
    - **Plan (`docs/plans/…`)** — đánh dấu **Definition of Done** (và checkbox unit liên quan nếu có) thành `[x]` khi đã có bằng chứng (build/smoke/commit). Thêm ghi chú smoke/verify ngắn nếu plan còn chỗ trống. *Trong lúc* `ce-work`, vẫn không dùng plan làm task tracker giữa chừng; *sau khi* hoàn tất, **phải** tick DoD — đóng vòng repo này ghi đè hướng dẫn skill chung “đừng sửa thân plan”.
-   - **Auto-merge PR của `ce-work`** — nếu bước `ce-work` tạo PR/MR (hoặc commit trên branch riêng), agent **bắt buộc tự động merge (auto-merge)** pull/merge request đó vào nhánh chính (`main`) sau khi kiểm tra không có conflict, gắn URL PR/MR vào Linear, rồi **xóa nhánh head của PR ce-work trên remote** (xem **Quy tắc chung — xóa nhánh sau merge PR**).
+   - **Auto-merge PR của `ce-work`** — nếu bước `ce-work` tạo PR/MR (hoặc commit trên branch riêng) và auto-merge bật (xem **Cấu hình repo**), agent **bắt buộc tự động merge (auto-merge)** pull/merge request đó vào nhánh chính (`main`) sau khi kiểm tra không có conflict, gắn URL PR/MR vào Linear, rồi **xóa nhánh head của PR ce-work trên remote** (xem **Quy tắc chung — xóa nhánh sau merge PR**). Khi auto-merge tắt, chỉ gắn URL PR/MR và comment chờ review.
    - **Linear (automation Implement)** — gắn URL PR/MR vào issue; `save_issue` → **`In Review`** (không nhảy thẳng Compound). `save_comment` tiếng Việt: đã ship gì, link PR/MR, trạng thái auto-merge, chờ review/đóng vòng.
    - **Đóng vòng sau review** — khi PR/MR đã merge / owner duyệt xong: `save_issue` → **`Compound`** + comment. **Không** chỉ nhờ owner tự đóng issue nếu agent đang ở session đóng vòng. Status → `Compound` sẽ tự kích hoạt automation **Compound** (chạy `ce-compound`) — agent không cần tự chạy `ce-compound` tay trong session này.
    - **Thông báo** — chạy **Thông báo hoàn thành của agent** (comment Linear) sau khi tạo PR/MR, auto-merge và chuyển `In Review` (và sau khi chuyển `Compound` nếu có).
@@ -133,3 +149,4 @@ Không auto-merge sớm. Ưu tiên một vòng giao tính năng ổn định tr�
 | `REPLACE_LINEAR_PROJECT_NAME` | `Your Project` |
 | `REPLACE_LINEAR_PROJECT_URL` | `https://linear.app/your-workspace/project/your-project-id/overview` |
 | `REPLACE_LINEAR_PROJECT_ID` | `your-project-id` |
+| `REPLACE_LOOP_FORCE_MERGE_PR` | `true` (auto-merge) hoặc `false` (chờ merge tay) |

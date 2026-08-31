@@ -47,7 +47,7 @@ $u = 'https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/main/scr
 
 - Chưa có `.cursor/loop.env` → **tự tạo** từ `loop.env.example` (giá trị mặc định `your-*`) rồi sync luôn, **không lỗi**.
 - Đã có `.cursor/loop.env` → dùng luôn giá trị đó để sync (chạy lại bao nhiêu lần cũng an toàn).
-- Nếu giá trị mặc định (`your-display-name`, `your-workspace`...) không đúng cho repo này: mở `.cursor/loop.env` sửa 5 biến Linear cho đúng, rồi chạy lại đúng lệnh trên — không cần bước riêng nào khác.
+- Nếu giá trị mặc định (`your-display-name`, `your-workspace`...) không đúng cho repo này: mở `.cursor/loop.env` sửa các biến Linear (và `REPLACE_LOOP_FORCE_MERGE_PR` nếu cần) cho đúng, rồi chạy lại đúng lệnh trên — không cần bước riêng nào khác.
 
 `bash -s --` dùng khi cần truyền thêm đường dẫn repo. Không pipe thẳng `sync-loop.sh` — script đó cần template cạnh nó; dùng `sync-loop-remote.sh` để tải đủ. Trên PowerShell: dùng `sync-loop-remote.ps1` (không pipe thẳng `sync-loop.ps1` — cùng lý do).
 

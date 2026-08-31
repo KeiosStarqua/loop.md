@@ -31,7 +31,12 @@ $Placeholders = @(
     'REPLACE_LINEAR_PROJECT_NAME'
     'REPLACE_LINEAR_PROJECT_URL'
     'REPLACE_LINEAR_PROJECT_ID'
+    'REPLACE_LOOP_FORCE_MERGE_PR'
 )
+
+$SetupDefaults = @{
+    'REPLACE_LOOP_FORCE_MERGE_PR' = 'true'
+}
 
 function Show-Usage {
     @'
@@ -95,6 +100,12 @@ function Test-Placeholders {
         [hashtable]$Vars
     )
 
+    foreach ($key in $SetupDefaults.Keys) {
+        if (-not $Vars.ContainsKey($key) -or [string]::IsNullOrEmpty($Vars[$key])) {
+            $Vars[$key] = $SetupDefaults[$key]
+        }
+    }
+
     $missing = @()
     foreach ($key in $Placeholders) {
         if (-not $Vars.ContainsKey($key) -or [string]::IsNullOrEmpty($Vars[$key])) {
@@ -104,6 +115,7 @@ function Test-Placeholders {
     if ($missing.Count -gt 0) {
         Write-ErrorAndExit "missing values in .cursor/loop.env: $($missing -join ', ')"
     }
+    return $Vars
 }
 
 function Remove-ChecklistSection {
@@ -156,6 +168,9 @@ function Invoke-Setup {
     else {
         $missing = @()
         foreach ($key in $Placeholders) {
+            if ($SetupDefaults.ContainsKey($key)) {
+                continue
+            }
             if (-not $SetupValues.ContainsKey($key) -or [string]::IsNullOrEmpty($SetupValues[$key])) {
                 $missing += $key
             }
@@ -173,7 +188,15 @@ function Invoke-Setup {
             '# Linear values for this repo - created by sync-loop.ps1 -Setup'
         )
         foreach ($key in $Placeholders) {
-            $lines += "$key=$($SetupValues[$key])"
+            if ($SetupValues.ContainsKey($key) -and -not [string]::IsNullOrEmpty($SetupValues[$key])) {
+                $lines += "$key=$($SetupValues[$key])"
+            }
+            elseif ($SetupDefaults.ContainsKey($key)) {
+                $lines += "$key=$($SetupDefaults[$key])"
+            }
+            else {
+                $lines += "$key=$($SetupValues[$key])"
+            }
         }
         [System.IO.File]::WriteAllText(
             $dest,
@@ -203,7 +226,7 @@ function Invoke-Sync {
     }
 
     $vars = Read-EnvFile -EnvFile $envFile
-    Test-Placeholders -Vars $vars
+    $vars = Test-Placeholders -Vars $vars
 
     if (-not (Test-Path -LiteralPath $outDir)) {
         New-Item -ItemType Directory -Path $outDir -Force | Out-Null
@@ -216,12 +239,12 @@ function Invoke-Sync {
         $text = $text.Replace($key, $vars[$key])
     }
 
-    if ($text -match 'REPLACE_LINEAR_[A-Z_]+') {
+    if ($text -match 'REPLACE_(LINEAR|LOOP)_[A-Z_]+') {
         Write-Error "unreplaced placeholders remain:"
         $lineNumber = 0
         foreach ($line in $text -split "`r?`n") {
             $lineNumber++
-            if ($line -match 'REPLACE_LINEAR_[A-Z_]+') {
+            if ($line -match 'REPLACE_(LINEAR|LOOP)_[A-Z_]+') {
                 Write-Error "${lineNumber}:$line"
             }
         }
