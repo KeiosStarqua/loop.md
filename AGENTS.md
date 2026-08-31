@@ -86,10 +86,10 @@ Default section order:
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
 - Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
-- Cho phép tự động merge pull/merge request chứa file plan sau bước `ce-plan`.
-- Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu có), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
-- Cho phép tự động merge pull/merge request sau bước `ce-work`.
-- Cho phép tự động merge pull/merge request sau bước `ce-compound`.
+- Auto-merge pull/merge request sau `ce-plan` / `ce-work` / `ce-compound` được điều khiển bởi `REPLACE_LOOP_FORCE_MERGE_PR` trong `.cursor/loop.env` (mặc định `true`). Xem **Quy tắc chung — auto-merge PR** trong `LOOP.md` / `LOOP.mdc`.
+- Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu `REPLACE_LOOP_FORCE_MERGE_PR=true`), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
+- Cho phép tự động merge pull/merge request sau bước `ce-work` khi `REPLACE_LOOP_FORCE_MERGE_PR=true`.
+- Cho phép tự động merge pull/merge request sau bước `ce-compound` khi `REPLACE_LOOP_FORCE_MERGE_PR=true`.
 - Sau mỗi lần auto-merge PR (plan / ce-work / ce-compound), **bắt buộc xóa nhánh head của PR đó trên remote** — xem **Quy tắc chung — xóa nhánh sau merge PR** trong `LOOP.md` / `LOOP.mdc`.
 - Sau bước `ce-compound` và sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi), tự chuyển status Linear sang `Done`.
 

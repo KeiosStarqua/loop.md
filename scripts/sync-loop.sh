@@ -13,6 +13,11 @@ PLACEHOLDERS=(
   REPLACE_LINEAR_PROJECT_NAME
   REPLACE_LINEAR_PROJECT_URL
   REPLACE_LINEAR_PROJECT_ID
+  REPLACE_LOOP_FORCE_MERGE_PR
+)
+
+SETUP_DEFAULTS=(
+  REPLACE_LOOP_FORCE_MERGE_PR=true
 )
 
 usage() {
@@ -73,6 +78,11 @@ load_env_file() {
 require_placeholders() {
   local missing=()
   local key
+  for key in "${!SETUP_DEFAULTS[@]}"; do
+    if [[ -z "${LOOP_VARS[$key]+x}" || -z "${LOOP_VARS[$key]}" ]]; then
+      LOOP_VARS["$key"]="${SETUP_DEFAULTS[$key]}"
+    fi
+  done
   for key in "${PLACEHOLDERS[@]}"; do
     if [[ -z "${LOOP_VARS[$key]+x}" || -z "${LOOP_VARS[$key]}" ]]; then
       missing+=("$key")
@@ -114,6 +124,9 @@ cmd_setup() {
     echo "đã có: $dest (giữ nguyên, dùng --force để ghi đè)"
   else
     for key in "${PLACEHOLDERS[@]}"; do
+      if [[ -n "${SETUP_DEFAULTS[$key]+x}" ]]; then
+        continue
+      fi
       if [[ -z "${SETUP_VALUES[$key]+x}" || -z "${SETUP_VALUES[$key]}" ]]; then
         missing+=("$key")
       fi
@@ -126,7 +139,13 @@ cmd_setup() {
     {
       echo "# Giá trị Linear cho repo này — tạo bởi sync-loop.sh --setup"
       for key in "${PLACEHOLDERS[@]}"; do
-        printf '%s=%s\n' "$key" "${SETUP_VALUES[$key]}"
+        if [[ -n "${SETUP_VALUES[$key]+x}" && -n "${SETUP_VALUES[$key]}" ]]; then
+          printf '%s=%s\n' "$key" "${SETUP_VALUES[$key]}"
+        elif [[ -n "${SETUP_DEFAULTS[$key]+x}" ]]; then
+          printf '%s=%s\n' "$key" "${SETUP_DEFAULTS[$key]}"
+        else
+          missing+=("$key")
+        fi
       done
     } > "$dest"
     echo "đã tạo: $dest"
@@ -166,9 +185,9 @@ cmd_sync() {
   done
 
   # Còn sót REPLACE_ → lỗi
-  if grep -qE 'REPLACE_LINEAR_[A-Z_]+' "$tmp"; then
+  if grep -qE 'REPLACE_(LINEAR|LOOP)_[A-Z_]+' "$tmp"; then
     echo "error: vẫn còn placeholder chưa thay:" >&2
-    grep -nE 'REPLACE_LINEAR_[A-Z_]+' "$tmp" >&2 || true
+    grep -nE 'REPLACE_(LINEAR|LOOP)_[A-Z_]+' "$tmp" >&2 || true
     exit 1
   fi
 
