@@ -31,7 +31,7 @@ In the loop workflow, after completing a task loop and transitioning an issue to
    - Sweep and delete any remaining merged plan / ce-work / ce-compound PR head branches on remote.
    - After the ce-compound PR is merged (or immediately if there were no changes), set Linear issue status to `Done`.
 3. **Sync surfaces:**
-   - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
+   - Edit `LOOP.md`, then run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc`.
    - Update `AUTOMATIONS.md` for operator-level details.
    - Never edit prompts inside `automations/*.json`.
 

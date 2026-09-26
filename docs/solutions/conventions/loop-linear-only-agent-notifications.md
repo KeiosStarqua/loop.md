@@ -29,7 +29,7 @@ Agent completion and step-start signals in LOOP are **Linear-only**:
 2. **Generate plan automation** — when status → `Plan`, notify **Linear** that planning started; run `ce-plan`; do not change status when done (`LOOP.md:27`).
 3. **Comment content** — Vietnamese 100%; short summary of what finished, main result/link, next step if any. Owner display name via placeholder `REPLACE_LINEAR_OWNER_DISPLAY_NAME` is optional in the comment, not a separate Slack mention (`LOOP.md:49`).
 4. **Not Cursor chat** — "Không chỉ nhắc trong Cursor chat" remains: the Linear comment is the durable handoff (`LOOP.md:51`).
-5. **Sync both files** — any notification change must land in **both** `LOOP.md` and `LOOP.mdc` (body identical; keep `LOOP.mdc` frontmatter). `AGENTS.md` restricts edits to explicit user requests.
+5. **Regenerate the rule file** — edit `LOOP.md` only, then run `scripts/gen-loop-mdc.sh` so `LOOP.mdc` keeps the same body plus frontmatter. `AGENTS.md` restricts edits to explicit user requests.
 
 ## Why This Matters
 

@@ -14,8 +14,15 @@ Tham gia bởi:
 | File | Nội dung |
 |------|----------|
 | [`AUTOMATIONS.md`](./AUTOMATIONS.md) | Ba automation mẫu: **Generate plan** (`Plan`), **Implement** (`In Progress`) và **Compound** (`Compound`) |
-| [`LOOP.md`](./LOOP.md) | Đặc tả vòng giao tính năng (đồng bộ với `LOOP.mdc`) |
-| [`AGENTS.md`](./AGENTS.md) | Quy tắc đồng bộ `LOOP.md` ↔ `LOOP.mdc` |
+| [`LOOP.md`](./LOOP.md) | Nguồn đặc tả vòng giao tính năng. `LOOP.mdc` sinh bằng `scripts/gen-loop-mdc.sh` |
+| [`AGENTS.md`](./AGENTS.md) | Quy tắc: sửa `LOOP.md`, chạy script để ghi `LOOP.mdc` |
+
+Sinh `LOOP.mdc` sau khi sửa nguồn (nội dung giữ nguyên, thêm frontmatter `alwaysApply: true`):
+
+```bash
+./scripts/gen-loop-mdc.sh          # ghi LOOP.mdc
+./scripts/gen-loop-mdc.sh --check  # lỗi nếu lệch
+```
 
 ## Cài / cập nhật `LOOP.mdc` vào repo khác
 

@@ -30,7 +30,7 @@ In the loop workflow, after completing implementation (`ce-work`), code changes 
    - Update the Linear issue status to `In Review`.
    - Send a Linear comment (100% Vietnamese) to the owner with what was shipped, PR/MR URL, auto-merge status, and waiting for review/compound.
 3. **Sync surfaces:**
-   - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
+   - Edit `LOOP.md`, then run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc`.
    - Update `AUTOMATIONS.md` for operator-level details.
    - Never edit prompts inside `automations/*.json`.
 

@@ -31,7 +31,7 @@ To streamline the workflow and eliminate unnecessary manual intervention, any pu
 2. **Post-`ce-plan` Notification:**
    - Include the plan path, Linear issue link, and plan PR merge status in the mandatory Linear comment to the owner.
 3. **Sync surfaces:**
-   - Update both `LOOP.md` and `LOOP.mdc` synchronously.
+   - Edit `LOOP.md`, then run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc`.
    - Update `AUTOMATIONS.md` for operator-level details.
 
 ## Why This Matters

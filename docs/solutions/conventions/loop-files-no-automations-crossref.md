@@ -39,7 +39,7 @@ Keep automation step summaries inline in `LOOP.md` / `LOOP.mdc`. Do not cross-re
 
 The three automation steps (Generate plan, Implement, Compound) remain in the LOOP files themselves. Detailed automation setup stays in `AUTOMATIONS.md` and `README.md` within `my-loop-config` only.
 
-`LOOP.md` and `LOOP.mdc` must stay content-synchronized (`AGENTS.md` rule). When changing either file, update both.
+`LOOP.md` is the source. After editing it, run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc` (`AGENTS.md`). Do not hand-edit `LOOP.mdc`.
 
 ## Why This Matters
 

@@ -35,7 +35,7 @@ The LOOP workflow auto-merges PRs after `ce-plan`, `ce-work`, and `ce-compound`.
 3. **Order:** merge PR → delete head branch → Linear comment / status change.
 
 4. **Sync surfaces:**
-   - Keep `LOOP.md` and `LOOP.mdc` strictly synchronized.
+   - Edit `LOOP.md`, then run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc`.
    - Update `AUTOMATIONS.md` for operator-level details.
    - Never edit prompts inside `automations/*.json`.
 

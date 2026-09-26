@@ -1,10 +1,10 @@
-2 file LOOP.md và LOOP.mdc phải luôn đồng bộ về mặt nội dung
+`LOOP.md` là nguồn. `LOOP.mdc` được sinh từ `LOOP.md` bởi `scripts/gen-loop-mdc.sh` (chỉ thêm frontmatter `alwaysApply: true`). Không viết `LOOP.mdc` bằng tay.
 
 LOOP.mdc là để dùng cho Cursor Rules, không xoá frontmatter trong *.mdc
 
-Không chỉnh sửa `LOOP.md` hoặc `LOOP.mdc` trừ khi có yêu cầu rõ ràng
+Không chỉnh sửa `LOOP.md` trừ khi có yêu cầu rõ ràng. Sau khi sửa, chạy `scripts/gen-loop-mdc.sh` để ghi lại `LOOP.mdc`.
 
-Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`
+Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật `LOOP.md` rồi chạy `scripts/gen-loop-mdc.sh`
 # DOX framework
 
 - DOX is highly performant AGENTS.md hierarchy installed here
@@ -85,7 +85,8 @@ Default section order:
 
 When the user requests a durable behavior change, record it here or in the relevant child AGENTS.md
 
-- Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật các file `LOOP.md` / `LOOP.mdc`.
+- Khi sửa đặc tả vòng: chỉ sửa `LOOP.md`, rồi chạy `scripts/gen-loop-mdc.sh` để sinh `LOOP.mdc`. Không viết cả hai file.
+- Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật `LOOP.md` rồi chạy `scripts/gen-loop-mdc.sh`.
 - Auto-merge pull/merge request sau `ce-plan` / `ce-work` / `ce-compound` được điều khiển bởi `REPLACE_LOOP_FORCE_MERGE_PR` trong `.cursor/loop.env` (mặc định `true`). Xem **Quy tắc chung — auto-merge PR** trong `LOOP.md` / `LOOP.mdc`.
 - Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu `REPLACE_LOOP_FORCE_MERGE_PR=true`), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
 - Cho phép tự động merge pull/merge request sau bước `ce-work` khi `REPLACE_LOOP_FORCE_MERGE_PR=true`.

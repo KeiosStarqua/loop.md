@@ -29,7 +29,7 @@ Treat PR/MR URL attachment as a **cross-step rule**, not an Implement-only step:
 2. **Generate plan step** — when status → `Plan` and a PR exists or is created during planning, attach URL PR/MR to Linear **before** conflict checks with `main` (`LOOP.md` automation bullet 1).
 3. **Implement step** — unchanged contract: attach URL and move to `In Review`; comment includes the link (`LOOP.md` **Quy trình vòng sau `ce-work`** step 2).
 4. **Post-`ce-plan` comment** — still required for plan completion (path, summary, next step). It does **not** replace attaching the PR URL to the issue field/metadata when a PR was created; URL on the issue is the durable anchor, comment is the handoff narrative.
-5. **Sync surfaces** — portable rule in `LOOP.md` + `LOOP.mdc` (identical body); operator detail in `AUTOMATIONS.md`; automation prompt in `automations/generate-plan.json` when that step can create a PR.
+5. **Sync surfaces** — edit the portable rule in `LOOP.md`, then run `scripts/gen-loop-mdc.sh` to write `LOOP.mdc`; operator detail in `AUTOMATIONS.md`; automation prompt in `automations/generate-plan.json` when that step can create a PR.
 
 **After (Generate plan automation bullet):**
 
