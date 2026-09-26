@@ -2,3 +2,8 @@
 .projectmem/watch.pid
 .projectmem/watch.log
 .projectmem/structure.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
