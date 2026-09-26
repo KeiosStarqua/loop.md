@@ -17,7 +17,8 @@ fetch() {
 mkdir -p "$CACHE/scripts"
 fetch "$SYNC_LOOP_SCRIPT_URL" "$CACHE/scripts/sync-loop.sh"
 fetch "${LOOP_CONFIG_RAW_BASE}/LOOP.mdc" "$CACHE/LOOP.mdc"
-fetch "${LOOP_CONFIG_RAW_BASE}/loop.env.example" "$CACHE/loop.env.example"
+fetch "${LOOP_CONFIG_RAW_BASE}/loop.jsonc.example" "$CACHE/loop.jsonc.example"
+fetch "${LOOP_CONFIG_RAW_BASE}/scripts/loop-jsonc.py" "$CACHE/scripts/loop-jsonc.py"
 chmod +x "$CACHE/scripts/sync-loop.sh"
 
 exec "$CACHE/scripts/sync-loop.sh" "$@"

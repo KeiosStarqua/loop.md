@@ -25,24 +25,26 @@ since the raw file is public on GitHub either way.
 `sync-loop.sh` resolves its own directory to find the template files that
 must sit next to it:
 
-```5:8:scripts/sync-loop.sh
+```6:10:scripts/sync-loop.sh
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 TEMPLATE="${CONFIG_ROOT}/LOOP.mdc"
-EXAMPLE_ENV="${CONFIG_ROOT}/loop.env.example"
+EXAMPLE_CONFIG="${CONFIG_ROOT}/loop.jsonc.example"
+PARSE_PY="${SCRIPT_DIR}/loop-jsonc.py"
 ```
 
 `sync-loop-remote.sh` exists purely to make that resolution possible when the
-caller has no local checkout: it downloads `sync-loop.sh` plus its two
-sibling files (`LOOP.mdc`, `loop.env.example`) into one real cache directory,
+caller has no local checkout: it downloads `sync-loop.sh`, `loop-jsonc.py`,
+`LOOP.mdc`, and `loop.jsonc.example` into one real cache directory,
 then `exec`s the script from there so `BASH_SOURCE[0]` points at a real path
 with the right neighbors:
 
-```17:23:scripts/sync-loop-remote.sh
+```17:24:scripts/sync-loop-remote.sh
 mkdir -p "$CACHE/scripts"
 fetch "$SYNC_LOOP_SCRIPT_URL" "$CACHE/scripts/sync-loop.sh"
 fetch "${LOOP_CONFIG_RAW_BASE}/LOOP.mdc" "$CACHE/LOOP.mdc"
-fetch "${LOOP_CONFIG_RAW_BASE}/loop.env.example" "$CACHE/loop.env.example"
+fetch "${LOOP_CONFIG_RAW_BASE}/loop.jsonc.example" "$CACHE/loop.jsonc.example"
+fetch "${LOOP_CONFIG_RAW_BASE}/scripts/loop-jsonc.py" "$CACHE/scripts/loop-jsonc.py"
 chmod +x "$CACHE/scripts/sync-loop.sh"
 
 exec "$CACHE/scripts/sync-loop.sh" "$@"
@@ -78,7 +80,7 @@ what `sync-loop-remote.sh` does for `sync-loop.sh`.
 
 The failure is not "missing template" (which would at least explain itself
 via `sync-loop.sh`'s own `die "không tìm thấy template: $TEMPLATE"` check at
-`scripts/sync-loop.sh:145`) — it's an unrelated, confusing `unbound variable`
+`scripts/sync-loop.sh:152`) — it's an unrelated, confusing `unbound variable`
 error thrown before the script's own validation logic ever runs, because
 `set -u` trips on `BASH_SOURCE[0]` first. Anyone hitting this without reading
 the script source would reasonably suspect a broken URL or a bash version
@@ -109,7 +111,7 @@ curl -fsSL https://raw.githubusercontent.com/KeiosStarqua/loop.md/refs/heads/mai
 
 ## Related
 
-- `README.md:43` — existing one-line warning against piping `sync-loop.sh` directly.
+- `README.md:60` — existing one-line warning against piping `sync-loop.sh` directly.
 - `scripts/sync-loop-remote.sh` — the wrapper that makes the remote-install flow safe.
-- `scripts/sync-loop.sh:5-8` — the path resolution this wrapper exists to satisfy.
-- `scripts/sync-loop.sh:145` — the template-not-found guard that would otherwise be the first error surfaced.
+- `scripts/sync-loop.sh:6-10` — the path resolution this wrapper exists to satisfy.
+- `scripts/sync-loop.sh:152` — the template-not-found guard that would otherwise be the first error surfaced.

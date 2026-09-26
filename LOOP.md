@@ -7,9 +7,11 @@ Quan sát → Chọn việc → Lập kế hoạch → Triển khai → Kiểm c
          → Review → Học → Đóng vòng → Lặp lại hoặc Dừng
 ```
 
-### Cấu hình repo (`.cursor/loop.env`)
+### Cấu hình repo (`.cursor/loop.jsonc`)
 
-Giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** điều khiển auto-merge pull/merge request trong vòng (`ce-plan`, `ce-work`, `ce-compound`):
+Một repo có thể gắn **nhiều** Linear project (`projects`: mảng `name`, `url`, `id`). Đúng một phần tử có thể mang `"default": true` — project tạo issue mới khi chưa xác định được project. Nếu không phần tử nào đánh dấu, phần tử đầu tiên là mặc định. Bảng project nằm ở **Linear (issue kỹ thuật nguyên tử)**.
+
+Giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** (khóa `forceMergePr`) điều khiển auto-merge pull/merge request trong vòng (`ce-plan`, `ce-work`, `ce-compound`):
 
 | Giá trị | Hành vi |
 |---------|---------|
@@ -40,7 +42,7 @@ Lặp issue Linear tiếp theo
 
 **Quy tắc chung — gắn URL PR/MR (bắt buộc):** bất kỳ bước nào tạo pull/merge request (dù là `ce-plan`, `ce-work`, automation, hay chạy tay) đều **phải** gắn URL PR/MR đó vào issue Linear liên quan ngay khi tạo — không chờ tới bước tổng kết mới gắn.
 
-**Quy tắc chung — auto-merge PR (theo cấu hình):** đọc giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** từ `.cursor/loop.env` (mặc định `true` nếu thiếu).
+**Quy tắc chung — auto-merge PR (theo cấu hình):** đọc giá trị **`REPLACE_LOOP_FORCE_MERGE_PR`** từ `.cursor/loop.jsonc` (khóa `forceMergePr`, mặc định `true` nếu thiếu).
 
 - **Khi `true`:** sau khi tạo PR/MR và kiểm tra/resolve conflict với `main`, agent **bắt buộc auto-merge** vào `main`, rồi xóa nhánh head (xem **Quy tắc chung — xóa nhánh sau merge PR**). Áp dụng cho PR của `ce-plan`, `ce-work`, `ce-compound` và automation tương ứng.
 - **Khi `false`:** agent **không** auto-merge; chỉ gắn URL PR/MR vào Linear và comment trạng thái chờ review. Owner merge tay trước khi các bước phụ thuộc merged PR có thể tiếp tục. **Không** xóa nhánh head cho đến khi PR đã merge.
@@ -72,7 +74,7 @@ Khi agent xong việc có ý nghĩa (task/issue xong, owner cần xem kết qu�
 
 1. **Linear** — trên issue kỹ thuật liên quan: `save_comment` (có thể ghi `REPLACE_LINEAR_OWNER_DISPLAY_NAME`), và/hoặc `save_issue` với `assignee: "me"` khi gán lại cho owner. Ngôn ngữ comment: **tiếng Việt 100%**. Comment ngắn: việc gì xong, kết quả/link chính, bước tiếp theo nếu có.
 
-Không chỉ nhắc trong Cursor chat. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project **`REPLACE_LINEAR_PROJECT_NAME`**, rồi comment + (tùy chọn) assign.
+Không chỉ nhắc trong Cursor chat. Nếu chưa có Linear issue phù hợp, tạo issue ngắn trong project mặc định **`REPLACE_LINEAR_DEFAULT_PROJECT_NAME`** (hoặc trong project khác ở bảng bên dưới nếu việc thuộc rõ project đó), rồi comment + (tùy chọn) assign.
 
 ### Quy trình vòng sau `ce-plan` (bắt buộc)
 
@@ -110,16 +112,17 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 | Trường | Giá trị |
 |--------|---------|
 | Workspace | **`REPLACE_LINEAR_WORKSPACE`** |
-| Project | **`REPLACE_LINEAR_PROJECT_NAME`** |
-| URL project | `REPLACE_LINEAR_PROJECT_URL` |
-| ID project | `REPLACE_LINEAR_PROJECT_ID` |
+
+Chọn việc trên **tất cả** project trong bảng. Tạo issue mới ở project **mặc định**, trừ khi việc thuộc rõ một project khác trong bảng:
+
+REPLACE_LINEAR_PROJECTS_TABLE
 
 **Ngôn ngữ (bắt buộc cho setup này)**
 - Toàn bộ chữ trên Linear **tiếng Việt 100%**: title, description, comment, acceptance, ghi chú. Giữ nguyên identifier file/path/tech khi trích dẫn.
 
 **Quy trình agent**
-- Trước khi làm việc cụ thể trên repo, query project Linear trước — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất.
-- Dùng Linear MCP: `list_issues` lọc theo project; `get_issue` lấy chi tiết acceptance.
+- Trước khi làm việc cụ thể trên repo, query **từng** project trong bảng — ưu tiên `In Progress`, rồi ưu tiên cao, rồi deadline gần nhất, trên tất cả các project.
+- Dùng Linear MCP: `list_issues` lọc theo từng project id trong bảng; `get_issue` lấy chi tiết acceptance.
 - **Status → Plan → plan:** owner chuyển issue sang **`Plan`** → automation **Generate plan** chạy **`ce-plan`**; nếu có PR/MR chứa plan thì resolve conflict, auto-merge vào `main`, **xóa nhánh head PR plan**, và gắn URL PR/MR vào Linear; comment Linear; đổi status → **`In Progress`**. Xem **Quy trình vòng sau `ce-plan`**.
 - **Status → In Progress → implement:** khi issue vào **`In Progress`** (Generate plan vừa xong, hoặc owner chuyển tay) → automation **Implement** kiểm tra trên Git provider (GitHub/GitLab) và Linear xem plan / PR của plan đã merge chưa — nếu chưa thì **stop**, chuyển status về **`Todo`** và comment; nếu đã merge thì chạy **`ce-work`** theo plan gắn issue; nếu có PR/MR thì resolve conflict, auto-merge vào `main`, **xóa nhánh head PR ce-work**, và gắn URL PR/MR vào Linear; status → **`In Review`**.
 - **Status → Compound → compound:** khi issue chuyển **`Compound`** (agent hoặc owner đóng vòng), automation **Compound** tự chạy **`ce-compound`** để đúc kết learning/DOX; nếu có thay đổi thì tạo PR/MR, kiểm tra/resolve conflict, auto-merge vào `main`, **xóa nhánh head PR ce-compound**, và gắn URL vào Linear; **dọn nhánh** — xóa mọi nhánh head PR plan / ce-work / ce-compound đã merge còn sót; sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi) đổi status → **`Done`**; agent **không** cần tự chạy tay bước này nữa.
@@ -131,8 +134,8 @@ Cũng áp dụng khi plan đã ship ở session trước nhưng DoD/Linear còn 
 Khi vòng thủ công đã ổn:
 
 ```text
-/loop <interval> Chọn Linear issue mở ưu tiên cao nhất trong project REPLACE_LINEAR_PROJECT_NAME
-(ưu tiên In Progress, rồi ưu tiên cao). Nếu chưa có plan thì chạy ce-plan (hoặc chờ
+/loop <interval> Chọn Linear issue mở ưu tiên cao nhất trong các project REPLACE_LINEAR_PROJECT_NAMES
+(ưu tiên In Progress, rồi ưu tiên cao, trên mọi project trong bảng). Nếu chưa có plan thì chạy ce-plan (hoặc chờ
 Cursor Automation sau Plan) rồi comment Linear cho owner và chuyển In Progress; nếu có plan thì kiểm tra plan/PR đã merge chưa (nếu chưa thì chuyển Todo; nếu đã merge thì ce-work). Kiểm chứng. Chạy đóng vòng
 (DoD + Linear Compound + comment Linear cho owner).
 Dừng khi BLOCKED / NEEDS_HUMAN_DECISION.
@@ -142,11 +145,11 @@ Không auto-merge sớm. Ưu tiên một vòng giao tính năng ổn định tr�
 
 ### Checklist REPLACE (điền trước khi dán sang repo khác)
 
-| Placeholder | Ví dụ |
-|-------------|--------|
-| `REPLACE_LINEAR_OWNER_DISPLAY_NAME` | `your-display-name` |
-| `REPLACE_LINEAR_WORKSPACE` | `your-workspace` |
-| `REPLACE_LINEAR_PROJECT_NAME` | `Your Project` |
-| `REPLACE_LINEAR_PROJECT_URL` | `https://linear.app/your-workspace/project/your-project-id/overview` |
-| `REPLACE_LINEAR_PROJECT_ID` | `your-project-id` |
-| `REPLACE_LOOP_FORCE_MERGE_PR` | `true` (auto-merge) hoặc `false` (chờ merge tay) |
+| Placeholder | Nguồn trong `.cursor/loop.jsonc` |
+|-------------|--------------------------------|
+| `REPLACE_LINEAR_OWNER_DISPLAY_NAME` | `ownerDisplayName` |
+| `REPLACE_LINEAR_WORKSPACE` | `workspace` |
+| `REPLACE_LOOP_FORCE_MERGE_PR` | `forceMergePr` (`true` / `false`) |
+| `REPLACE_LINEAR_DEFAULT_PROJECT_NAME` | project `"default": true`, hoặc project đầu tiên |
+| `REPLACE_LINEAR_PROJECT_NAMES` | tên mọi project, nối bằng `, ` |
+| `REPLACE_LINEAR_PROJECTS_TABLE` | bảng markdown sinh từ `projects` |

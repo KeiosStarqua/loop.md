@@ -1,0 +1,29 @@
+{
+  // Tên hiển thị owner trên Linear — dùng trong comment.
+  "ownerDisplayName": "your-display-name",
+
+  // Slug workspace Linear.
+  "workspace": "your-workspace",
+
+  // true: agent auto-merge PR sau ce-plan / ce-work / ce-compound.
+  // false: chỉ tạo PR và gắn URL Linear, chờ owner merge tay.
+  "forceMergePr": true,
+
+  // Mọi Linear project quản lý issue của repo này.
+  // "default": true trên đúng một project — nơi tạo issue mới khi chưa
+  // xác định được project. Nếu không project nào đánh dấu, project đầu tiên là mặc định.
+  // Thêm project: nhân bản một object trong mảng (không dấu phẩy thừa sau phần tử cuối).
+  "projects": [
+    {
+      "name": "Your Project",
+      "url": "https://linear.app/your-workspace/project/your-project-id/overview",
+      "id": "your-project-id",
+      "default": true
+    }
+    // {
+    //   "name": "Another Project",
+    //   "url": "https://linear.app/your-workspace/project/another-project-id/overview",
+    //   "id": "another-project-id"
+    // }
+  ]
+}

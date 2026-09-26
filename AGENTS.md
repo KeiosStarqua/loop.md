@@ -87,10 +87,11 @@ When the user requests a durable behavior change, record it here or in the relev
 
 - Khi sửa đặc tả vòng: chỉ sửa `LOOP.md`, rồi chạy `scripts/gen-loop-mdc.sh` để sinh `LOOP.mdc`. Không viết cả hai file.
 - Không bao giờ cập nhật prompt trong các file json (`automations/*.json`), chỉ cập nhật `LOOP.md` rồi chạy `scripts/gen-loop-mdc.sh`.
-- Auto-merge pull/merge request sau `ce-plan` / `ce-work` / `ce-compound` được điều khiển bởi `REPLACE_LOOP_FORCE_MERGE_PR` trong `.cursor/loop.env` (mặc định `true`). Xem **Quy tắc chung — auto-merge PR** trong `LOOP.md` / `LOOP.mdc`.
-- Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu `REPLACE_LOOP_FORCE_MERGE_PR=true`), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
-- Cho phép tự động merge pull/merge request sau bước `ce-work` khi `REPLACE_LOOP_FORCE_MERGE_PR=true`.
-- Cho phép tự động merge pull/merge request sau bước `ce-compound` khi `REPLACE_LOOP_FORCE_MERGE_PR=true`.
+- Auto-merge pull/merge request sau `ce-plan` / `ce-work` / `ce-compound` được điều khiển bởi `forceMergePr` trong `.cursor/loop.jsonc` (mặc định `true`). Xem **Quy tắc chung — auto-merge PR** trong `LOOP.md` / `LOOP.mdc`.
+- Một repo có thể gắn nhiều Linear project trong mảng `projects` của `.cursor/loop.jsonc`. Project `"default": true` (hoặc project đầu tiên) là nơi tạo issue mới.
+- Sau bước `ce-plan` (sau khi gắn plan↔Linear và auto-merge PR của plan nếu `forceMergePr` là `true`), tự chuyển status Linear sang `In Progress` để kích hoạt Implement.
+- Cho phép tự động merge pull/merge request sau bước `ce-work` khi `forceMergePr` là `true`.
+- Cho phép tự động merge pull/merge request sau bước `ce-compound` khi `forceMergePr` là `true`.
 - Sau mỗi lần auto-merge PR (plan / ce-work / ce-compound), **bắt buộc xóa nhánh head của PR đó trên remote** — xem **Quy tắc chung — xóa nhánh sau merge PR** trong `LOOP.md` / `LOOP.mdc`.
 - Sau bước `ce-compound` và sau khi merge PR của ce-compound (hoặc ngay nếu không có thay đổi), tự chuyển status Linear sang `Done`.
 

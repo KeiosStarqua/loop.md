@@ -78,6 +78,6 @@ $cachedScript = Join-Path $scriptsDir 'sync-loop.ps1'
 Get-RemoteFile -Url $SyncLoopScriptUrl -Destination $cachedScript
 Add-Utf8Bom -Path $cachedScript
 Get-RemoteFile -Url "$LoopConfigRawBase/LOOP.mdc" -Destination (Join-Path $Cache 'LOOP.mdc')
-Get-RemoteFile -Url "$LoopConfigRawBase/loop.env.example" -Destination (Join-Path $Cache 'loop.env.example')
+Get-RemoteFile -Url "$LoopConfigRawBase/loop.jsonc.example" -Destination (Join-Path $Cache 'loop.jsonc.example')
 
 & (Join-Path $scriptsDir 'sync-loop.ps1') @SyncArgs

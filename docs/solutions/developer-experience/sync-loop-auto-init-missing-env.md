@@ -29,22 +29,22 @@ Before the fix, that path died when the target repo had no per-repo loop env fil
 
 Default sync must be idempotent and self-bootstrapping:
 
-1. If the target repo's loop env file is missing, create it from `loop.env.example` (do not overwrite an existing file).
+1. If the target repo has neither `.cursor/loop.jsonc` nor legacy `.cursor/loop.env`, create `loop.jsonc` from `loop.jsonc.example` (do not overwrite an existing file).
 2. Continue sync immediately using those values.
 3. Tell the user the defaults may need editing, then re-run the same command.
 
-Keep `--init` for “create only, don’t sync,” and keep `--setup` as an optional power path for callers that already know the five Linear values. Do not make the happy path require either flag.
+Keep `--init` for “create only, don’t sync,” and keep `--setup` as an optional power path for callers that already know the Linear values (owner, workspace, and one or more projects). Do not make the happy path require either flag. A legacy `loop.env` is read as a single project when `loop.jsonc` is absent; do not seed a default `loop.jsonc` on top of it, because `loop.jsonc` would take priority.
 
 Verified behavior in `cmd_sync`:
 
-```147:150:scripts/sync-loop.sh
-  if [[ ! -f "$env_file" ]]; then
+```159:162:scripts/sync-loop.sh
+  else
     cmd_init "$target"
-    echo "  (dùng giá trị Linear mặc định trong loop.env.example — sửa $env_file rồi chạy lại nếu không đúng cho repo này)"
-  fi
+    config_file="$jsonc"
+    echo "  (dùng giá trị mặc định trong loop.jsonc.example — sửa $config_file rồi chạy lại nếu không đúng cho repo này)"
 ```
 
-`cmd_init` still refuses to overwrite an existing env file, so re-running the plain sync command is safe once Linear values are filled in.
+`cmd_init` still refuses to overwrite an existing `loop.jsonc`, and it does not seed `loop.jsonc` when legacy `loop.env` is already present, so re-running the plain sync command is safe once Linear values are filled in.
 
 ## Why This Matters
 
@@ -67,12 +67,12 @@ error: chưa có <repo>/.cursor/loop.env — chạy: .../sync-loop.sh --init "<r
 **After (succeeds on first run):**
 
 ```text
-đã tạo: <repo>/.cursor/loop.env — hãy điền giá trị Linear của repo
-  (dùng giá trị Linear mặc định trong loop.env.example — sửa ... rồi chạy lại nếu không đúng)
+đã tạo: <repo>/.cursor/loop.jsonc — hãy điền project Linear của repo
+  (dùng giá trị mặc định trong loop.jsonc.example — sửa ... rồi chạy lại nếu không đúng)
 đã ghi: <repo>/.cursor/rules/LOOP.mdc
 ```
 
-Then edit the target repo's loop env file with the real Linear project and re-run the same curl command.
+Then edit the target repo's `loop.jsonc` (`projects` may list more than one Linear project) and re-run the same curl command.
 
 ## Related
 
